@@ -239,8 +239,24 @@ module Uilt {
 			return btn
 		}
 
+		/**
+		 * 绘制圆
+		 * @param x 原点X值
+		 * @param y 原点Y值
+		 * @param raduis 圆半径
+		 * @param color 填充颜色
+		 * @returns {egret.Sprite}
+		 */
+		public static createCircle(x: number, y: number, raduis: number, color: number): egret.Sprite {
+			let circle: egret.Sprite = new egret.Sprite
+			circle.graphics.beginFill(color)
+			circle.graphics.drawCircle(x, y, raduis)
+			circle.graphics.endFill()
+			return circle
+		}
 		public static createTextField(): egret.TextField {
-
+			let text: egret.TextField = new egret.TextField
+			return text
 		}
 	}
 	//舞台类

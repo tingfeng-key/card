@@ -1,6 +1,7 @@
 import SceneManager = Uilt.SceneManager;
 import Menu = SceneCard.Menu;
 import Stage = Uilt.Stage;
+import Card = SceneCard.Card;
 class Main extends egret.DisplayObjectContainer {
 
     public constructor() {
@@ -13,6 +14,7 @@ class Main extends egret.DisplayObjectContainer {
         let sceneManager: SceneManager = SceneManager.interval
         this.stage.addChild(sceneManager);
         let menu: Menu = new Menu
-        sceneManager.loadScence(menu)
+        let card: Card = new Card
+        sceneManager.loadScence(card)
     }
 }

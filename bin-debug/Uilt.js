@@ -259,6 +259,25 @@ var Uilt;
             text.textColor = fontColor;
             return btn;
         };
+        /**
+         * 绘制圆
+         * @param x 原点X值
+         * @param y 原点Y值
+         * @param raduis 圆半径
+         * @param color 填充颜色
+         * @returns {egret.Sprite}
+         */
+        Tool.createCircle = function (x, y, raduis, color) {
+            var circle = new egret.Sprite;
+            circle.graphics.beginFill(color);
+            circle.graphics.drawCircle(x, y, raduis);
+            circle.graphics.endFill();
+            return circle;
+        };
+        Tool.createTextField = function () {
+            var text = new egret.TextField;
+            return text;
+        };
         return Tool;
     }());
     Uilt.Tool = Tool;
