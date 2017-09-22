@@ -190,6 +190,18 @@ var Uilt;
             shp.graphics.endFill();
             return shp;
         };
+        /**
+         * 绘制曲线
+         * @param x
+         * @param y
+         * @param x1
+         * @param y1
+         * @param w
+         * @param h
+         * @param lineW
+         * @param lineC
+         * @returns {egret.Shape}
+         */
         Tool.createCurveTo = function (x, y, x1, y1, w, h, lineW, lineC) {
             if (x === void 0) { x = 0; }
             if (y === void 0) { y = 0; }
@@ -203,12 +215,33 @@ var Uilt;
             return shp;
         };
         /**
+         * 绘制圆角矩形
+         * @param x 起点X坐标
+         * @param y 起点Y坐标
+         * @param width 宽度
+         * @param height 高度
+         * @param round 圆角像素
+         * @param color 背景颜色
+         * @param isAphla 是否透明
+         * @returns {egret.Sprite}
+         */
+        Tool.createRoundRect = function (x, y, width, height, round, color, isAphla) {
+            if (isAphla === void 0) { isAphla = false; }
+            var roundRect = new egret.Sprite();
+            roundRect.x = x;
+            roundRect.y = y;
+            roundRect.graphics.beginFill(color, (isAphla) ? 0 : 1);
+            roundRect.graphics.drawRoundRect(0, 0, width, height, round, round);
+            roundRect.graphics.endFill();
+            return roundRect;
+        };
+        /**
          * 画按钮
          * @param x X值
          * @param y Y值
          * @returns {egret.Sprite}
          */
-        Tool.drawBtn = function (x, y, w, h, r, textField, btnColor, fontColor, touchEnalb) {
+        Tool.createBtn = function (x, y, w, h, r, textField, btnColor, fontColor, touchEnalb) {
             if (touchEnalb === void 0) { touchEnalb = true; }
             var btn = new egret.Sprite(), text = new egret.TextField();
             btn.addChild(text);
@@ -236,7 +269,8 @@ var Uilt;
         }
         Object.defineProperty(Stage, "interval", {
             get: function () {
-                this.stage.width = 640;
+                this.stage.width = Config.StateW;
+                this.stage.height = Config.StateH;
                 return (this._interval || (this._interval = new Stage));
             },
             enumerable: true,

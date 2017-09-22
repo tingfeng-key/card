@@ -15,11 +15,11 @@
   <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="Uilt.ts" pinned="false" current-in-tab="false">
+      <file leaf-file-name="Uilt.ts" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Uilt.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="476">
-              <caret line="188" column="8" lean-forward="false" selection-start-line="188" selection-start-column="8" selection-end-line="188" selection-end-column="8" />
+            <state relative-caret-position="432">
+              <caret line="242" column="16" lean-forward="false" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
               <folding>
                 <element signature="n#Game#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#constructor#0;n#Game#0;n#Uilt#0" expanded="false" />
@@ -57,10 +57,9 @@
                 <element signature="n#!!block;n#createCurveTo#0;n#Tool#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!doc;n#createRoundRect#0;n#Tool#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#createRoundRect#0;n#Tool#0;n#Uilt#0" expanded="false" />
-                <element signature="n#!!doc;n#drawBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
-                <element signature="n#!!block;n#drawBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
+                <element signature="n#!!doc;n#createBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
+                <element signature="n#!!block;n#createBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
                 <element signature="n#Stage#0;n#Uilt#0" expanded="false" />
-                <element signature="n#!!block;n#interval#0;n#Stage#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!doc;n#stage#0;n#Stage#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#stage#0;n#Stage#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!doc;n#stageW#0;n#Stage#0;n#Uilt#0" expanded="false" />
@@ -73,30 +72,42 @@
                 <element signature="n#!!block;n#setAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#setAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#6424#6478#0" expanded="false" />
+                <element signature="e#6627#6681#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchorX#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#injectAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#6831#7140#0" expanded="false" />
-                <element signature="e#6853#6890#0" expanded="false" />
-                <element signature="e#6917#7089#0" expanded="false" />
-                <element signature="e#7030#7076#0" expanded="false" />
-                <element signature="e#7208#7519#0" expanded="false" />
-                <element signature="e#7230#7268#0" expanded="false" />
-                <element signature="e#7295#7468#0" expanded="false" />
-                <element signature="e#7409#7455#0" expanded="false" />
-                <element signature="e#7588#7948#0" expanded="false" />
-                <element signature="e#7610#7644#0" expanded="false" />
-                <element signature="e#7671#7897#0" expanded="false" />
-                <element signature="e#7838#7884#0" expanded="false" />
-                <element signature="e#8017#8377#0" expanded="false" />
-                <element signature="e#8039#8073#0" expanded="false" />
-                <element signature="e#8100#8326#0" expanded="false" />
-                <element signature="e#8267#8313#0" expanded="false" />
+                <element signature="e#7034#7343#0" expanded="false" />
+                <element signature="e#7056#7093#0" expanded="false" />
+                <element signature="e#7120#7292#0" expanded="false" />
+                <element signature="e#7233#7279#0" expanded="false" />
+                <element signature="e#7411#7722#0" expanded="false" />
+                <element signature="e#7433#7471#0" expanded="false" />
+                <element signature="e#7498#7671#0" expanded="false" />
+                <element signature="e#7612#7658#0" expanded="false" />
+                <element signature="e#7791#8151#0" expanded="false" />
+                <element signature="e#7813#7847#0" expanded="false" />
+                <element signature="e#7874#8100#0" expanded="false" />
+                <element signature="e#8041#8087#0" expanded="false" />
+                <element signature="e#8220#8580#0" expanded="false" />
+                <element signature="e#8242#8276#0" expanded="false" />
+                <element signature="e#8303#8529#0" expanded="false" />
+                <element signature="e#8470#8516#0" expanded="false" />
                 <element signature="n#!!block;n#changeAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#8511#8665#0" expanded="false" />
+                <element signature="e#8714#8868#0" expanded="false" />
                 <element signature="n#GameStatus#0;n#Uilt#0" expanded="false" />
                 <element signature="n#Coordinate#0;n#Uilt#0" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Card.ts" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Scene/Card.ts">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="330">
+              <caret line="41" column="33" lean-forward="true" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="33" />
+              <folding>
+                <element signature="n#!!doc;n#SceneCard#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -105,8 +116,8 @@
       <file leaf-file-name="Main.ts" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Main.ts">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="5" column="16" lean-forward="true" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+            <state relative-caret-position="242">
+              <caret line="11" column="22" lean-forward="false" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
               <folding />
             </state>
           </provider>
@@ -122,40 +133,6 @@
                 <element signature="e#1681#2023#0" expanded="false" />
                 <element signature="e#2172#2835#0" expanded="false" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="manifest.json" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/manifest.json">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="308">
-              <caret line="14" column="5" lean-forward="false" selection-start-line="14" selection-start-column="5" selection-end-line="15" selection-end-column="1" />
-              <folding>
-                <marker date="1506072114117" expanded="true" signature="0:331" ph="{...}" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Card.ts" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Scene/Card.ts">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="518">
-              <caret line="27" column="73" lean-forward="false" selection-start-line="27" selection-start-column="73" selection-end-line="27" selection-end-column="73" />
-              <folding>
-                <element signature="n#!!doc;n#SceneCard#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="44">
-              <caret line="2" column="10" lean-forward="false" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -182,10 +159,10 @@
         <option value="$PROJECT_DIR$/src/Scene/CoolRun.ts" />
         <option value="$PROJECT_DIR$/index.html" />
         <option value="$PROJECT_DIR$/manifest.json" />
-        <option value="$PROJECT_DIR$/src/Uilt.ts" />
+        <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/src/Main.ts" />
         <option value="$PROJECT_DIR$/src/Scene/Card.ts" />
-        <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/src/Uilt.ts" />
       </list>
     </option>
   </component>
@@ -699,12 +676,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1506066950101</updated>
-      <workItem from="1506066951740" duration="5685000" />
+      <workItem from="1506066951740" duration="7280000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5685000" />
+    <option name="totallyTimeSpent" value="7280000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
@@ -727,7 +704,7 @@
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.102878466" sideWeight="0.5" order="6" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20362474" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.08742005" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -800,23 +777,41 @@
         <state relative-caret-position="308">
           <caret line="14" column="5" lean-forward="false" selection-start-line="14" selection-start-column="5" selection-end-line="15" selection-end-column="1" />
           <folding>
-            <marker date="1506072114117" expanded="true" signature="0:331" ph="{...}" />
+            <marker date="1506075093485" expanded="true" signature="0:331" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="44">
+          <caret line="2" column="10" lean-forward="false" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Main.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="5" column="16" lean-forward="true" selection-start-line="5" selection-start-column="16" selection-end-line="5" selection-end-column="16" />
+        <state relative-caret-position="242">
+          <caret line="11" column="22" lean-forward="false" selection-start-line="11" selection-start-column="22" selection-end-line="11" selection-end-column="22" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Scene/Card.ts">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="41" column="33" lean-forward="true" selection-start-line="41" selection-start-column="33" selection-end-line="41" selection-end-column="33" />
+          <folding>
+            <element signature="n#!!doc;n#SceneCard#0" expanded="false" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Uilt.ts">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="476">
-          <caret line="188" column="8" lean-forward="false" selection-start-line="188" selection-start-column="8" selection-end-line="188" selection-end-column="8" />
+        <state relative-caret-position="432">
+          <caret line="242" column="16" lean-forward="false" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
           <folding>
             <element signature="n#Game#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#constructor#0;n#Game#0;n#Uilt#0" expanded="false" />
@@ -854,10 +849,9 @@
             <element signature="n#!!block;n#createCurveTo#0;n#Tool#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!doc;n#createRoundRect#0;n#Tool#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#createRoundRect#0;n#Tool#0;n#Uilt#0" expanded="false" />
-            <element signature="n#!!doc;n#drawBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
-            <element signature="n#!!block;n#drawBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
+            <element signature="n#!!doc;n#createBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
+            <element signature="n#!!block;n#createBtn#0;n#Tool#0;n#Uilt#0" expanded="false" />
             <element signature="n#Stage#0;n#Uilt#0" expanded="false" />
-            <element signature="n#!!block;n#interval#0;n#Stage#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!doc;n#stage#0;n#Stage#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#stage#0;n#Stage#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!doc;n#stageW#0;n#Stage#0;n#Uilt#0" expanded="false" />
@@ -870,49 +864,31 @@
             <element signature="n#!!block;n#setAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#setAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#getAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#6424#6478#0" expanded="false" />
+            <element signature="e#6627#6681#0" expanded="false" />
             <element signature="n#!!block;n#getAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#getAnchorX#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#injectAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#6831#7140#0" expanded="false" />
-            <element signature="e#6853#6890#0" expanded="false" />
-            <element signature="e#6917#7089#0" expanded="false" />
-            <element signature="e#7030#7076#0" expanded="false" />
-            <element signature="e#7208#7519#0" expanded="false" />
-            <element signature="e#7230#7268#0" expanded="false" />
-            <element signature="e#7295#7468#0" expanded="false" />
-            <element signature="e#7409#7455#0" expanded="false" />
-            <element signature="e#7588#7948#0" expanded="false" />
-            <element signature="e#7610#7644#0" expanded="false" />
-            <element signature="e#7671#7897#0" expanded="false" />
-            <element signature="e#7838#7884#0" expanded="false" />
-            <element signature="e#8017#8377#0" expanded="false" />
-            <element signature="e#8039#8073#0" expanded="false" />
-            <element signature="e#8100#8326#0" expanded="false" />
-            <element signature="e#8267#8313#0" expanded="false" />
+            <element signature="e#7034#7343#0" expanded="false" />
+            <element signature="e#7056#7093#0" expanded="false" />
+            <element signature="e#7120#7292#0" expanded="false" />
+            <element signature="e#7233#7279#0" expanded="false" />
+            <element signature="e#7411#7722#0" expanded="false" />
+            <element signature="e#7433#7471#0" expanded="false" />
+            <element signature="e#7498#7671#0" expanded="false" />
+            <element signature="e#7612#7658#0" expanded="false" />
+            <element signature="e#7791#8151#0" expanded="false" />
+            <element signature="e#7813#7847#0" expanded="false" />
+            <element signature="e#7874#8100#0" expanded="false" />
+            <element signature="e#8041#8087#0" expanded="false" />
+            <element signature="e#8220#8580#0" expanded="false" />
+            <element signature="e#8242#8276#0" expanded="false" />
+            <element signature="e#8303#8529#0" expanded="false" />
+            <element signature="e#8470#8516#0" expanded="false" />
             <element signature="n#!!block;n#changeAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#8511#8665#0" expanded="false" />
+            <element signature="e#8714#8868#0" expanded="false" />
             <element signature="n#GameStatus#0;n#Uilt#0" expanded="false" />
             <element signature="n#Coordinate#0;n#Uilt#0" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Scene/Card.ts">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="518">
-          <caret line="27" column="73" lean-forward="false" selection-start-line="27" selection-start-column="73" selection-end-line="27" selection-end-column="73" />
-          <folding>
-            <element signature="n#!!doc;n#SceneCard#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="44">
-          <caret line="2" column="10" lean-forward="false" selection-start-line="2" selection-start-column="10" selection-end-line="2" selection-end-column="10" />
-          <folding />
         </state>
       </provider>
     </entry>

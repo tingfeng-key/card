@@ -192,15 +192,19 @@ module Uilt {
 		 * @param y 起点Y坐标
 		 * @param width 宽度
 		 * @param height 高度
-		 * @param color 颜色
 		 * @param round 圆角像素
-		 * @returns {egret.Shape}
+		 * @param color 背景颜色
+		 * @param isAphla 是否透明
+		 * @returns {egret.Sprite}
 		 */
-		public static createRoundRect(x: number, y: number, width: number, height: number, color: number, round: number): egret.Shape {
-			let roundRect: egret.Shape = new egret.Shape()
+		public static createRoundRect(
+			x: number, y: number, width: number, height: number,
+			round: number,color: number, isAphla: boolean = false
+		): egret.Sprite {
+			let roundRect: egret.Sprite = new egret.Sprite()
 			roundRect.x = x
 			roundRect.y = y
-			roundRect.graphics.beginFill(color)
+			roundRect.graphics.beginFill(color, (isAphla)?0:1)
 			roundRect.graphics.drawRoundRect(0, 0, width, height, round, round)
 			roundRect.graphics.endFill()
 			return roundRect
@@ -212,7 +216,10 @@ module Uilt {
 		 * @param y Y值
 		 * @returns {egret.Sprite}
 		 */
-		public static drawBtn(x:number, y: number, w:number, h: number, r:number, textField: string, btnColor: number, fontColor: number, touchEnalb: boolean = true): egret.Sprite {
+		public static createBtn(
+			x:number, y: number, w:number, h: number, r:number, textField: string,
+			btnColor: number, fontColor: number, touchEnalb: boolean = true
+		): egret.Sprite {
 			let btn: egret.Sprite = new egret.Sprite(),
 				text: egret.TextField = new egret.TextField()
 			btn.addChild(text)
@@ -231,12 +238,17 @@ module Uilt {
 			text.textColor = fontColor
 			return btn
 		}
+
+		public static createTextField(): egret.TextField {
+
+		}
 	}
 	//舞台类
 	export class Stage {
 		public static _interval:Stage;
 		public static get interval(): Stage{
-			this.stage.width = 640
+			this.stage.width = Config.StateW
+			this.stage.height = Config.StateH
 			return (this._interval || (this._interval = new Stage));
 		}
 		/**
