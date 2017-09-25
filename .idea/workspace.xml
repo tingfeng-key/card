@@ -19,7 +19,7 @@
         <entry file="file://$PROJECT_DIR$/src/Uilt.ts">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="432">
-              <caret line="242" column="16" lean-forward="false" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
+              <caret line="242" column="0" lean-forward="false" selection-start-line="242" selection-start-column="0" selection-end-line="242" selection-end-column="0" />
               <folding>
                 <element signature="n#Game#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#constructor#0;n#Game#0;n#Uilt#0" expanded="false" />
@@ -72,28 +72,28 @@
                 <element signature="n#!!block;n#setAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#setAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#6627#6681#0" expanded="false" />
+                <element signature="e#6623#6677#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#getAnchorX#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
                 <element signature="n#!!block;n#injectAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#7034#7343#0" expanded="false" />
-                <element signature="e#7056#7093#0" expanded="false" />
-                <element signature="e#7120#7292#0" expanded="false" />
-                <element signature="e#7233#7279#0" expanded="false" />
-                <element signature="e#7411#7722#0" expanded="false" />
-                <element signature="e#7433#7471#0" expanded="false" />
-                <element signature="e#7498#7671#0" expanded="false" />
-                <element signature="e#7612#7658#0" expanded="false" />
-                <element signature="e#7791#8151#0" expanded="false" />
-                <element signature="e#7813#7847#0" expanded="false" />
-                <element signature="e#7874#8100#0" expanded="false" />
-                <element signature="e#8041#8087#0" expanded="false" />
-                <element signature="e#8220#8580#0" expanded="false" />
-                <element signature="e#8242#8276#0" expanded="false" />
-                <element signature="e#8303#8529#0" expanded="false" />
-                <element signature="e#8470#8516#0" expanded="false" />
+                <element signature="e#7030#7339#0" expanded="false" />
+                <element signature="e#7052#7089#0" expanded="false" />
+                <element signature="e#7116#7288#0" expanded="false" />
+                <element signature="e#7229#7275#0" expanded="false" />
+                <element signature="e#7407#7718#0" expanded="false" />
+                <element signature="e#7429#7467#0" expanded="false" />
+                <element signature="e#7494#7667#0" expanded="false" />
+                <element signature="e#7608#7654#0" expanded="false" />
+                <element signature="e#7787#8147#0" expanded="false" />
+                <element signature="e#7809#7843#0" expanded="false" />
+                <element signature="e#7870#8096#0" expanded="false" />
+                <element signature="e#8037#8083#0" expanded="false" />
+                <element signature="e#8216#8576#0" expanded="false" />
+                <element signature="e#8238#8272#0" expanded="false" />
+                <element signature="e#8299#8525#0" expanded="false" />
+                <element signature="e#8466#8512#0" expanded="false" />
                 <element signature="n#!!block;n#changeAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-                <element signature="e#8714#8868#0" expanded="false" />
+                <element signature="e#8710#8864#0" expanded="false" />
                 <element signature="n#GameStatus#0;n#Uilt#0" expanded="false" />
                 <element signature="n#Coordinate#0;n#Uilt#0" expanded="false" />
               </folding>
@@ -676,16 +676,16 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1506066950101</updated>
-      <workItem from="1506066951740" duration="7280000" />
+      <workItem from="1506066951740" duration="7325000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="7280000" />
+    <option name="totallyTimeSpent" value="7325000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="-8" y="-8" width="1936" height="1056" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -698,7 +698,7 @@
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="TypeScript" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -811,7 +811,7 @@
     <entry file="file://$PROJECT_DIR$/src/Uilt.ts">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="432">
-          <caret line="242" column="16" lean-forward="false" selection-start-line="242" selection-start-column="16" selection-end-line="242" selection-end-column="16" />
+          <caret line="242" column="0" lean-forward="false" selection-start-line="242" selection-start-column="0" selection-end-line="242" selection-end-column="0" />
           <folding>
             <element signature="n#Game#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#constructor#0;n#Game#0;n#Uilt#0" expanded="false" />
@@ -864,28 +864,28 @@
             <element signature="n#!!block;n#setAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#setAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#getAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#6627#6681#0" expanded="false" />
+            <element signature="e#6623#6677#0" expanded="false" />
             <element signature="n#!!block;n#getAnchorY#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#getAnchorX#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
             <element signature="n#!!block;n#injectAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#7034#7343#0" expanded="false" />
-            <element signature="e#7056#7093#0" expanded="false" />
-            <element signature="e#7120#7292#0" expanded="false" />
-            <element signature="e#7233#7279#0" expanded="false" />
-            <element signature="e#7411#7722#0" expanded="false" />
-            <element signature="e#7433#7471#0" expanded="false" />
-            <element signature="e#7498#7671#0" expanded="false" />
-            <element signature="e#7612#7658#0" expanded="false" />
-            <element signature="e#7791#8151#0" expanded="false" />
-            <element signature="e#7813#7847#0" expanded="false" />
-            <element signature="e#7874#8100#0" expanded="false" />
-            <element signature="e#8041#8087#0" expanded="false" />
-            <element signature="e#8220#8580#0" expanded="false" />
-            <element signature="e#8242#8276#0" expanded="false" />
-            <element signature="e#8303#8529#0" expanded="false" />
-            <element signature="e#8470#8516#0" expanded="false" />
+            <element signature="e#7030#7339#0" expanded="false" />
+            <element signature="e#7052#7089#0" expanded="false" />
+            <element signature="e#7116#7288#0" expanded="false" />
+            <element signature="e#7229#7275#0" expanded="false" />
+            <element signature="e#7407#7718#0" expanded="false" />
+            <element signature="e#7429#7467#0" expanded="false" />
+            <element signature="e#7494#7667#0" expanded="false" />
+            <element signature="e#7608#7654#0" expanded="false" />
+            <element signature="e#7787#8147#0" expanded="false" />
+            <element signature="e#7809#7843#0" expanded="false" />
+            <element signature="e#7870#8096#0" expanded="false" />
+            <element signature="e#8037#8083#0" expanded="false" />
+            <element signature="e#8216#8576#0" expanded="false" />
+            <element signature="e#8238#8272#0" expanded="false" />
+            <element signature="e#8299#8525#0" expanded="false" />
+            <element signature="e#8466#8512#0" expanded="false" />
             <element signature="n#!!block;n#changeAnchor#0;n#AnchorUtils#0;n#Uilt#0" expanded="false" />
-            <element signature="e#8714#8868#0" expanded="false" />
+            <element signature="e#8710#8864#0" expanded="false" />
             <element signature="n#GameStatus#0;n#Uilt#0" expanded="false" />
             <element signature="n#Coordinate#0;n#Uilt#0" expanded="false" />
           </folding>
