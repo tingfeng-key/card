@@ -14,6 +14,8 @@ var __extends = (this && this.__extends) || (function () {
 var SceneManager = Uilt.SceneManager;
 var Menu = SceneCard.Menu;
 var Stage = Uilt.Stage;
+var Card = SceneCard.Card;
+var Road = SceneCard.Road;
 var Main = (function (_super) {
     __extends(Main, _super);
     function Main() {
@@ -26,7 +28,9 @@ var Main = (function (_super) {
         var sceneManager = SceneManager.interval;
         this.stage.addChild(sceneManager);
         var menu = new Menu;
-        sceneManager.loadScence(menu);
+        var card = new Card;
+        var road = new Road;
+        sceneManager.loadScence(road);
     };
     return Main;
 }(egret.DisplayObjectContainer));
