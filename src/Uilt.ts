@@ -2,11 +2,15 @@ module Uilt {
 	//配置类
 	export class Config {
 		public static debug: boolean = true; //调试模式
-		public static panelLineWidth = 2; //线条宽度
-		public static panelLineColor = 0x00ff00; //线条颜色
 		public static gameName: string = "极速冒险"; //游戏名称
 		public static StateW: number = 640; //舞台宽度
 		public static StateH: number = 1136; //舞台高度
+		public static panelLineWidth = 2; //线条宽度
+		public static panelLineColor = 0x00ff00; //线条颜色
+
+		public static weixinSignUrl: string = ''; //后端微信签名地址
+		public static weixinShareDebug: boolean = false; //微信分享调试模式
+		public static weixinShareAppId: string = ''; //微信分享AppID
 	}
 	//游戏基本属性类
 	export class Game {
@@ -423,6 +427,190 @@ module Uilt {
 		}
 	}
 
+	//微信分享接口
+	interface SignPackage {
+		debug: boolean; //调试模式
+		appId:string; //分享的微信平台AppID
+		nonceStr:string; 随机数
+		timestamp:number; 时间戳
+		signature:string; 签名
+		url:string; //地址
+	}
+	//分享的内容
+	interface ShareContent {
+		title: string; //标题
+		desc: string; //描述
+		link: string; //游戏地址
+		imgLink: string; //游戏图片、LOGO
+	}
+
+	//微信分享
+	export class WeixinShare {
+		private signPackage:SignPackage; //签名包
+		public shareCont: ShareContent;
+		private static _interval: WeixinShare;
+		public static get interval(): WeixinShare {
+			return this._interval || (this._interval = new WeixinShare)
+		}
+		/**
+		 * 初始化
+		 */
+		public init(): void {
+			let urlloader = new egret.URLLoader(),
+				req = new egret.URLRequest(Config.weixinSignUrl);
+			urlloader.load(req);
+			req.method = egret.URLRequestMethod.GET;
+			urlloader.addEventListener(egret.Event.COMPLETE, (e)=> {
+				this.signPackage = <SignPackage>JSON.parse(e.target.data);
+				this.getWeiXinConfig();
+			}, this);
+		}
+
+		/**
+		 * 配置参数
+		 */
+		private getWeiXinConfig(): void {
+			let bodyConfig = new BodyConfig();
+			bodyConfig.debug = this.signPackage.debug;
+			bodyConfig.appId = this.signPackage.appId;
+			bodyConfig.timestamp = this.signPackage.timestamp;
+			bodyConfig.nonceStr = this.signPackage.nonceStr;
+			bodyConfig.signature = this.signPackage.signature;
+			bodyConfig.jsApiList = [// 必填，需要使用的JS接口列表
+				// 所有要调用的 API 都要加到这个列表中
+				'checkJsApi',//判断当前客户端是否支持指定JS接口
+				'chooseImage',//拍照或从手机相册中选图接口
+				'onMenuShareTimeline', //分享到朋友圈
+				'onMenuShareAppMessage', //分享给朋友
+				'showMenuItems',
+				'hideMenuItems',
+			];
+			wx.config(bodyConfig);
+			wx.ready(function() {
+				//需要隐藏的菜单选项
+				wx.hideMenuItems({
+					menuList: [
+						"menuItem:share:timeline",
+						"menuItem:editTag",
+						"menuItem:readMode"
+					]
+				});
+				//检测的jsApi接口
+				wx.checkJsApi({
+					jsApiList: [
+						'getNetworkType',
+						'previewImage',
+						'onMenuShareTimeline',
+						'onMenuShareAppMessage',
+						'onMenuShareQQ',
+						'onMenuShareWeibo'
+					],
+					success: function (res) {
+						//alert(JSON.stringify(res));
+					}
+				});
+			});
+		}
+
+		/**
+		 * 分享给朋友
+		 */
+		private onShareAPPMessage() {
+			let shareAppMessage = new BodyMenuShareAppMessage();
+			shareAppMessage.title = this.shareCont.title;
+			shareAppMessage.desc = this.shareCont.desc;
+			shareAppMessage.link = this.shareCont.link;
+			shareAppMessage.imgUrl = this.shareCont.imgLink;
+			shareAppMessage.trigger = function (res) {
+				console.log('用户点击发送给朋友');
+			}
+			shareAppMessage.success = function (res) {
+				console.log('已分享');
+			};
+			shareAppMessage.fail = function (res) {
+				console.log('已取消');
+			};
+			shareAppMessage.cancel = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到QQ
+		 */
+		private onShareQQ() {
+			let shareqq = new BodyMenuShareQQ();
+			shareqq.title = this.shareCont.title;
+			shareqq.desc = this.shareCont.desc;
+			shareqq.link = this.shareCont.link;
+			shareqq.imgUrl = this.shareCont.imgLink;
+			shareqq.complete = function (res) {
+				console.log(JSON.stringify(res));
+			};
+			shareqq.trigger = function (res) {
+				console.log('用户点击分享到QQ');
+			};
+			shareqq.success = function (res) {
+				console.log('已分享');
+			};
+			shareqq.cancel = function (res) {
+				console.log('已取消');
+			};
+			shareqq.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到微博
+		 * @param e
+		 */
+		private onshareWeibo(e:egret.TouchEvent) {
+			let shareweibo = new BodyMenuShareWeibo();
+			shareweibo.title = this.shareCont.title;
+			shareweibo.desc = this.shareCont.desc;
+			shareweibo.link = this.shareCont.link;
+			shareweibo.imgUrl = this.shareCont.imgLink;
+			shareweibo.complete = function (res) {
+				console.log(JSON.stringify(res));
+			};
+			shareweibo.trigger = function (res) {
+				console.log('用户点击分享到微博');
+			};
+			shareweibo.cancel = function (res) {
+				console.log('已取消');
+			};
+			shareweibo.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到朋友圈
+		 * @param e
+		 */
+		private onTimeline(e:egret.TouchEvent): void {
+			let sharet = new BodyMenuShareTimeline();
+			sharet.title = this.shareCont.title;
+			sharet.link = this.shareCont.link;
+			sharet.imgUrl = this.shareCont.imgLink;
+			sharet.trigger = function (res) {
+				// 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，
+				// 因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+				console.log('用户点击分享到朋友圈');
+			};
+			sharet.success = function (res) {
+				console.log('已分享');
+			};
+			sharet.cancel = function (res) {
+				console.log('已取消');
+			};
+			sharet.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+	}
+
 	//游戏状态
 	export enum GameStatus{
 		Load = 0,//加载资源
@@ -431,12 +619,5 @@ module Uilt {
 		Died = 3,//游戏结束
 		Finash = 4,//通过游戏
 		OneFinash = 5, //方块下落完成
-	}
-
-	//坐标
-	export enum Coordinate {
-		x = 1,
-		y = 2,
-		both = 3
 	}
 }

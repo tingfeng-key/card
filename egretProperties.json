@@ -23,6 +23,9 @@
       "name": "res"
     },
     {
+      "name": "weixinapi"
+    },
+    {
       "name": "promise",
       "path": "./promise"
     }
