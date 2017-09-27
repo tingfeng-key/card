@@ -5,12 +5,18 @@ module Uilt {
 		public static gameName: string = "极速冒险"; //游戏名称
 		public static StateW: number = 640; //舞台宽度
 		public static StateH: number = 1136; //舞台高度
-		public static panelLineWidth = 2; //线条宽度
-		public static panelLineColor = 0x00ff00; //线条颜色
+		public static panelLineWidth: number = 2; //线条宽度
+		public static panelLineColor: number = 0x00ff00; //线条颜色
 
-		public static weixinSignUrl: string = ''; //后端微信签名地址
-		public static weixinShareDebug: boolean = false; //微信分享调试模式
-		public static weixinShareAppId: string = ''; //微信分享AppID
+		public static LoadGameConfigUrl: string = '/diyGames/getConfig/' //加载游戏配置URL
+
+		public static weixinSignUrl: string = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
+
+		//设置
+		public static setting_skin: number = 1; //设置皮肤
+		public static setting_grade: number = 4;//设置难度
+		public static setting_font: string = "微软雅黑"; //设置字体
+		public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
 	}
 	//游戏基本属性类
 	export class Game {
@@ -133,6 +139,16 @@ module Uilt {
 	}
 	//工具 类
 	export class Tool {
+
+		/**
+		 * 获取当前链接参数
+		 * @param name 参数名
+		 */
+		public static getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return decodeURI(r[2]); return null;
+		}
 		/**
 		 * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
 		 * Create a Bitmap object according to name keyword.As for the property of name please refer to the configuration file of resources/resource.json.
@@ -447,7 +463,7 @@ module Uilt {
 	//微信分享
 	export class WeixinShare {
 		private signPackage:SignPackage; //签名包
-		public shareCont: ShareContent;
+		public shareCont: ShareContent = <ShareContent>{};//分享内容对象
 		private static _interval: WeixinShare;
 		public static get interval(): WeixinShare {
 			return this._interval || (this._interval = new WeixinShare)
@@ -458,6 +474,7 @@ module Uilt {
 		public init(): void {
 			let urlloader = new egret.URLLoader(),
 				req = new egret.URLRequest(Config.weixinSignUrl);
+			urlloader.data = {url: window.location.href}
 			urlloader.load(req);
 			req.method = egret.URLRequestMethod.GET;
 			urlloader.addEventListener(egret.Event.COMPLETE, (e)=> {
@@ -611,6 +628,57 @@ module Uilt {
 		}
 	}
 
+	interface keyValue {
+		key: string,
+		value: string
+	}
+
+	//网络请求
+	export class Http {
+		private request: egret.HttpRequest = new egret.HttpRequest //实例化请求
+		/**
+		 * 构造传参
+		 * @param url 请求地址
+		 * @param method 请求方式
+		 * @param responseType 请求类型
+		 * @param headers 请求头信息
+		 */
+		public constructor(url: string, method: string, responseType: string, headers: Array<keyValue> = []) {
+			this.request.responseType = responseType;
+			this.request.open(url, method);
+			if(headers.length > 0){
+				for(let i = 0; i < headers.length; i++){
+					this.request.setRequestHeader(headers[i].key, headers[i].value);
+				}
+			}
+		}
+
+		/**
+		 * 返回请求实例
+		 * @returns {egret.HttpRequest}
+		 */
+		public req() {
+			return this.request
+		}
+
+		/**
+		 * 设置请求头
+		 * @param key
+		 * @param value
+		 */
+		public setHeader(key: string, value: string) {
+			this.request.setRequestHeader(key, value);
+		}
+
+		/**
+		 * 发送请求
+		 * @param data
+		 */
+		public sendRequest(data: any = '') {
+			this.request.send(data)
+		}
+	}
+
 	//游戏状态
 	export enum GameStatus{
 		Load = 0,//加载资源
@@ -619,5 +687,102 @@ module Uilt {
 		Died = 3,//游戏结束
 		Finash = 4,//通过游戏
 		OneFinash = 5, //方块下落完成
+	}
+
+	/**
+	 *
+	 * 设备工具类
+	 *
+	 */
+	class DeviceUtils {
+		/**
+		 * 当前是否Html5版本
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsHtml5(): boolean {
+			return egret.Capabilities.runtimeType == egret.RuntimeType.WEB;
+		}
+
+		/**
+		 * 当前是否是Native版本
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsNative(): boolean {
+			return egret.Capabilities.runtimeType == egret.RuntimeType.NATIVE;
+		}
+
+		/**
+		 * 是否是在手机上
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsMobile(): boolean {
+			return egret.Capabilities.isMobile;
+		}
+
+		/**
+		 * 是否是在PC上
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsPC(): boolean {
+			return !egret.Capabilities.isMobile;
+		}
+
+		/**
+		 * 是否是QQ浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsQQBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf('MQQBrowser') != -1;
+		}
+
+		/**
+		 * 是否是IE浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsIEBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("MSIE") != -1;
+		}
+
+		/**
+		 * 是否是Firefox浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsFirefoxBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Firefox") != -1;
+		}
+
+		/**
+		 * 是否是Chrome浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsChromeBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Chrome") != -1;
+		}
+
+		/**
+		 * 是否是Safari浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsSafariBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Safari") != -1;
+		}
+
+		/**
+		 * 是否是Opera浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsOperaBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Opera") != -1;
+		}
 	}
 }

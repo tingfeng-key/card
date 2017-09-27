@@ -26,3 +26,4 @@ var Scene;
     Scene.CoolRun = CoolRun;
     __reflect(CoolRun.prototype, "Scene.CoolRun");
 })(Scene || (Scene = {}));
+//# sourceMappingURL=CoolRun.js.map
