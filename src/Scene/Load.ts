@@ -28,31 +28,31 @@ module Load {
             RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
             if(paramId == null) {
                 RES.loadConfig("resource/"+this.fileName+".res.json", "resource/");
+            }else {
+                let http: Http = new Http(Config.LoadGameConfigUrl + paramId, egret.HttpMethod.GET, egret.HttpResponseType.TEXT)
+                http.req().addEventListener(egret.Event.COMPLETE, (e) => {
+                    let request = <egret.HttpRequest>e.currentTarget;
+                    let res = JSON.parse(request.response),
+                        setting = res.setting
+                    Config.gameName = setting.name || res.game_name
+
+                    Config.setting_skin = setting.color;
+                    Config.setting_grade = setting.grade;
+                    Config.setting_font = setting.font;
+                    Config.setting_rewardArr = setting.reward;
+
+                    WeixinShare.interval.init()
+                    WeixinShare.interval.shareCont.title = setting.name || res.game_name
+                    WeixinShare.interval.shareCont.desc = setting.share_text
+                    WeixinShare.interval.shareCont.link = window.location.href
+                    WeixinShare.interval.shareCont.imgLink = setting.logo || res.game_logo
+
+
+                    RES.loadConfig("resource/_skin" + res.setting.color + ".res.json", "resource/");
+                }, this);
+                http.setHeader('Content-Type', 'application/x-www-form-urlencoded')
+                http.sendRequest()
             }
-            let http: Http = new Http(Config.LoadGameConfigUrl+paramId, egret.HttpMethod.GET, egret.HttpResponseType.TEXT)
-            http.req().addEventListener(egret.Event.COMPLETE, (e) => {
-                let request = <egret.HttpRequest>e.currentTarget;
-                let res = JSON.parse(request.response),
-                    setting = res.setting
-                Config.gameName = setting.name || res.game_name
-
-                Config.setting_skin = setting.color;
-                Config.setting_grade = setting.grade;
-                Config.setting_font = setting.font;
-                Config.setting_rewardArr = setting.reward;
-
-                WeixinShare.interval.init()
-                WeixinShare.interval.shareCont.title = setting.name || res.game_name
-                WeixinShare.interval.shareCont.desc = setting.share_text
-                WeixinShare.interval.shareCont.link = window.location.href
-                WeixinShare.interval.shareCont.imgLink = setting.logo || res.game_logo
-
-
-                RES.loadConfig("resource/_skin"+res.setting.color+".res.json", "resource/");
-            }, this);
-            http.setHeader('Content-Type', 'application/x-www-form-urlencoded')
-            http.sendRequest()
-
         }
         private onResCommon() {
             RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);

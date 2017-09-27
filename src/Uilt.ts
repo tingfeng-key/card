@@ -450,7 +450,7 @@ module Uilt {
 		nonceStr:string; 随机数
 		timestamp:number; 时间戳
 		signature:string; 签名
-		url:string; //地址
+		//url:string; //地址
 	}
 	//分享的内容
 	interface ShareContent {
