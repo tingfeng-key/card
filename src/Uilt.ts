@@ -2,7 +2,7 @@ module Uilt {
 	//配置类
 	export class Config {
 		public static debug: boolean = true; //调试模式
-		public static gameName: string = "极速冒险"; //游戏名称
+		public static gameName: string = "2048"; //游戏名称
 		public static StateW: number = 640; //舞台宽度
 		public static StateH: number = 1136; //舞台高度
 		public static panelLineWidth: number = 2; //线条宽度
@@ -171,13 +171,15 @@ module Uilt {
 		 * @returns {egret.Shape}
 		 */
 		public static createLineTo(
-			x:number = 0, y: number = 0, w:number, h: number,
+			x:number = 0, y: number = 0, x2:number, y2: number,
 			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
+			shp.x = x
+			shp.y = y
 			shp.graphics.lineStyle( lineW, lineC );
-			shp.graphics.moveTo( x, y );
-			shp.graphics.lineTo( w, h );
+			shp.graphics.moveTo( 0, 0 );
+			shp.graphics.lineTo( x2, y2 );
 			shp.graphics.endFill();
 			return shp;
 		}
@@ -694,7 +696,7 @@ module Uilt {
 	 * 设备工具类
 	 *
 	 */
-	class DeviceUtils {
+	export class DeviceUtils {
 		/**
 		 * 当前是否Html5版本
 		 * @returns {boolean}
@@ -783,6 +785,16 @@ module Uilt {
 		 */
 		public static get IsOperaBrowser(): boolean {
 			return this.IsHtml5 && navigator.userAgent.indexOf("Opera") != -1;
+		}
+	}
+
+	//格子坐标
+	export class Pos {
+		public posX: number; //坐标X值
+		public posY: number; // 坐标Y值
+		public constructor(x: number, y: number){
+			this.posX = x;
+			this.posY = y;
 		}
 	}
 }

@@ -21,6 +21,11 @@ module Load {
     //加载网络皮肤配置
     export class LoadSkinConfig extends egret.Sprite {
         private fileName: string
+
+        /**
+         * 加载皮肤配置
+         * @param fileName 文件名称，支持目录结构
+         */
         public constructor(fileName: string = "default") {
             super()
             this.fileName = fileName
@@ -54,18 +59,39 @@ module Load {
                 http.sendRequest()
             }
         }
-        private onResCommon() {
+
+        /**
+         * 配置文件加载完成
+         * @param e
+         */
+        private onResCommon(e: RES.ResourceEvent) {
             RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
-            RES.addEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onGroupComplete, this);
-            RES.addEventListener(RES.ResourceEvent.GROUP_PROGRESS, this.onGroupProgress, this);
-            RES.loadGroup("preload");
+            if(e.itemsTotal === 0){ //如果资源组为空，则直接进入菜单
+                SceneManager.interval.loadScence(new ElsbScene.BackgRound())
+                SceneManager.interval.loadScence(new ElsbScene.Panel())
+                SceneManager.interval.loadScence(new ElsbScene.Grid()) //加载游戏格子场景
+                SceneManager.interval.loadScence(new ElsbScene.NumberData()) //加载游戏数据场景
+            }else{
+                RES.addEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onGroupComplete, this);
+                RES.addEventListener(RES.ResourceEvent.GROUP_PROGRESS, this.onGroupProgress, this);
+                RES.loadGroup("preload");
+            }
         }
 
+        /**
+         * 资源组加载完成事件
+         */
         private onGroupComplete(){
             console.log("加载完成");
-            SceneManager.interval.loadScence(new SceneCard.Menu)
+            RES.removeEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onGroupComplete, this);
+            RES.removeEventListener(RES.ResourceEvent.GROUP_PROGRESS, this.onGroupProgress, this);
+            SceneManager.interval.loadScence(new ElsbScene.Menu) //加载游戏菜单场景
         }
 
+        /**
+         * 资源组加载进度事件
+         * @param event
+         */
         private onGroupProgress(event: RES.ResourceEvent) {
             console.log("progress", event.itemsLoaded, event.itemsTotal)
         }

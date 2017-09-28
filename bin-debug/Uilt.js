@@ -18,15 +18,18 @@ var Uilt;
         function Config() {
         }
         Config.debug = true; //调试模式
-        Config.gameName = "极速冒险"; //游戏名称
+        Config.gameName = "2048"; //游戏名称
         Config.StateW = 640; //舞台宽度
         Config.StateH = 1136; //舞台高度
         Config.panelLineWidth = 2; //线条宽度
         Config.panelLineColor = 0x00ff00; //线条颜色
-        Config.LoadGameConfigUrl = '/diyGame/getConfig'; //加载游戏配置URL
-        Config.weixinSignUrl = ''; //后端微信签名地址
-        Config.weixinShareDebug = false; //微信分享调试模式
-        Config.weixinShareAppId = ''; //微信分享AppID
+        Config.LoadGameConfigUrl = '/diyGames/getConfig/'; //加载游戏配置URL
+        Config.weixinSignUrl = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
+        //设置
+        Config.setting_skin = 1; //设置皮肤
+        Config.setting_grade = 4; //设置难度
+        Config.setting_font = "微软雅黑"; //设置字体
+        Config.setting_rewardArr = "[{num: 2048, url: 'http://www.fz222.com'}]"; //奖励机制
         return Config;
     }());
     Uilt.Config = Config;
@@ -193,15 +196,17 @@ var Uilt;
          * @param lineC
          * @returns {egret.Shape}
          */
-        Tool.createLineTo = function (x, y, w, h, lineW, lineC) {
+        Tool.createLineTo = function (x, y, x2, y2, lineW, lineC) {
             if (x === void 0) { x = 0; }
             if (y === void 0) { y = 0; }
             if (lineW === void 0) { lineW = Config.panelLineWidth; }
             if (lineC === void 0) { lineC = Config.panelLineColor; }
             var shp = new egret.Shape();
+            shp.x = x;
+            shp.y = y;
             shp.graphics.lineStyle(lineW, lineC);
-            shp.graphics.moveTo(x, y);
-            shp.graphics.lineTo(w, h);
+            shp.graphics.moveTo(0, 0);
+            shp.graphics.lineTo(x2, y2);
             shp.graphics.endFill();
             return shp;
         };
@@ -473,6 +478,7 @@ var Uilt;
     //微信分享
     var WeixinShare = (function () {
         function WeixinShare() {
+            this.shareCont = {}; //分享内容对象
         }
         Object.defineProperty(WeixinShare, "interval", {
             get: function () {
@@ -487,6 +493,7 @@ var Uilt;
         WeixinShare.prototype.init = function () {
             var _this = this;
             var urlloader = new egret.URLLoader(), req = new egret.URLRequest(Config.weixinSignUrl);
+            urlloader.data = { url: window.location.href };
             urlloader.load(req);
             req.method = egret.URLRequestMethod.GET;
             urlloader.addEventListener(egret.Event.COMPLETE, function (e) {
@@ -694,5 +701,146 @@ var Uilt;
         GameStatus[GameStatus["Finash"] = 4] = "Finash";
         GameStatus[GameStatus["OneFinash"] = 5] = "OneFinash";
     })(GameStatus = Uilt.GameStatus || (Uilt.GameStatus = {}));
+    /**
+     *
+     * 设备工具类
+     *
+     */
+    var DeviceUtils = (function () {
+        function DeviceUtils() {
+        }
+        Object.defineProperty(DeviceUtils, "IsHtml5", {
+            /**
+             * 当前是否Html5版本
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return egret.Capabilities.runtimeType == egret.RuntimeType.WEB;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsNative", {
+            /**
+             * 当前是否是Native版本
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return egret.Capabilities.runtimeType == egret.RuntimeType.NATIVE;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsMobile", {
+            /**
+             * 是否是在手机上
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return egret.Capabilities.isMobile;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsPC", {
+            /**
+             * 是否是在PC上
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return !egret.Capabilities.isMobile;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsQQBrowser", {
+            /**
+             * 是否是QQ浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf('MQQBrowser') != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsIEBrowser", {
+            /**
+             * 是否是IE浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf("MSIE") != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsFirefoxBrowser", {
+            /**
+             * 是否是Firefox浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf("Firefox") != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsChromeBrowser", {
+            /**
+             * 是否是Chrome浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf("Chrome") != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsSafariBrowser", {
+            /**
+             * 是否是Safari浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf("Safari") != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(DeviceUtils, "IsOperaBrowser", {
+            /**
+             * 是否是Opera浏览器
+             * @returns {boolean}
+             * @constructor
+             */
+            get: function () {
+                return this.IsHtml5 && navigator.userAgent.indexOf("Opera") != -1;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        return DeviceUtils;
+    }());
+    Uilt.DeviceUtils = DeviceUtils;
+    __reflect(DeviceUtils.prototype, "Uilt.DeviceUtils");
+    //格子坐标
+    var Pos = (function () {
+        function Pos(x, y) {
+            this.posX = x;
+            this.posY = y;
+        }
+        return Pos;
+    }());
+    Uilt.Pos = Pos;
+    __reflect(Pos.prototype, "Uilt.Pos");
 })(Uilt || (Uilt = {}));
-//# sourceMappingURL=Uilt.js.map
