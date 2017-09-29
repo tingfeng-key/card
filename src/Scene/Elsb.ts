@@ -231,16 +231,235 @@ module ElsbScene {
     }
     export class NumberData extends egret.Sprite {
         public data: Array<NumberMap> = [] //数组
+        private keyMap: KeyBoard;
         public constructor() {
             super()
             this.x = Grid.interval.x
             this.y = Grid.interval.y
             this.width = Grid.interval.width
             this.height = Grid.interval.height
-            console.log(Math.floor(Math.random()*4),Math.floor(Math.random()*4))
-            let one: NumberMap = this.createOne(99999, 0, 0)
-            this.data.push(one)
-            this.addChild(one)
+            let emptyGrid1: Pos = this.randGetOneEmptyGrid()
+            let one1: NumberMap = this.createOne(this.randCreateOneNumber(), emptyGrid1.posX, emptyGrid1.posY)
+            this.data.push(one1)
+            this.addChild(one1)
+
+            let emptyGrid2: Pos = this.randGetOneEmptyGrid()
+            let one2: NumberMap = this.createOne(this.randCreateOneNumber(), emptyGrid2.posX, emptyGrid2.posY)
+            this.data.push(one2)
+            this.addChild(one2)
+
+            this.keyMap = new KeyBoard();
+            //添加监听事件
+            this.keyMap.addEventListener(KeyBoard.onkeydown,this.onkeydown,this);
+        }
+
+        private onkeydown(event) {
+            if(this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
+                let data: Array<NumberMap> = this.dataYSortDesc()
+                for (let i = 0; i < data.length; i++){
+                    //let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow)
+                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.DownArrow), data[i].value)
+                }
+            }
+            else if(this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
+                let data: Array<NumberMap> = this.dataYSortAsc()
+                for (let i = 0; i < data.length; i++){
+                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.UpArrow), data[i].value)
+                }
+            }
+            else if(this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
+                let data: Array<NumberMap> = this.dataXSortDesc()
+                for (let i = 0; i < data.length; i++){
+                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.RightArrow), data[i].value)
+                }
+            }
+            else if(this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
+                let data: Array<NumberMap> = this.dataXSortAsc()
+                for (let i = 0; i < data.length; i++){
+                    let length: number = this.moveLength(data[i], data, KeyBoard.keyArrow)
+                    if(this.isPos(data[i].posX-length, data[i].posY)){
+                        data[i].intValue()
+                        let map: NumberMap = this.getNumberMap(data[i].posX-length, data[i].posY)
+                        this.removeChild(map)
+                        this.removeMap(map)
+                    }
+                    let tw: egret.Tween = egret.Tween.get(data[i])
+                    tw.to({
+                        x: (data[i].posX-length
+                    }, 100, egret.Ease.bounceIn)
+                    //console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.keyArrow), data[i].value)
+                }
+            }
+        }
+
+        /**
+         * 移动的数值
+         * @param map 当前对象
+         * @param data 排序后的对象组
+         * @param type 操作类型
+         * @returns {number}
+         */
+        private moveLength(map: NumberMap, data: Array<NumberMap>, type: string){
+            switch (type){
+                case KeyBoard.keyArrow:
+                    for (let i = 0; i < data.length; i++){
+                        if(map.posY===data[i].posY && map.posX > data[i].posX){
+                            if(data[i].value === map.value){
+                                return Math.abs(data[i].posX-map.posX)-1
+                            }
+                            return Math.abs(data[i].posX-map.posX)
+                        }
+                    }
+                    return map.posX
+                case KeyBoard.RightArrow:
+                    for (let i = 0; i < data.length; i++){
+                        if(map.posY===data[i].posY && map.posX < data[i].posX){
+                            if(data[i].value === map.value){
+                                return Math.abs(data[i].posX-map.posX)+1
+                            }
+                            return Math.abs(data[i].posX-map.posX)
+                        }
+                    }
+                    return Grid.gridItemCols-map.posX-1
+                case KeyBoard.UpArrow:
+                    for (let i = 0; i < data.length; i++){
+                        if(map.posX===data[i].posX && map.posY > data[i].posY){
+                            if(data[i].value === map.value){
+                                return Math.abs(data[i].posX-map.posX)-1
+                            }
+                            return Math.abs(data[i].posX-map.posX)
+                        }
+                    }
+                    return map.posY
+                case KeyBoard.DownArrow:
+                    for (let i = 0; i < data.length; i++){
+                        if(map.posX===data[i].posX && map.posY < data[i].posY){
+                            if(data[i].value === map.value){
+                                return Math.abs(data[i].posX-map.posX)+1
+                            }
+                            return Math.abs(data[i].posX-map.posX)
+                        }
+                    }
+                    return Grid.gridItemRows-map.posY-1
+            }
+        }
+
+        /**
+         * 根据posX和posY值获取对象
+         * @param posX
+         * @param posY
+         * @returns {any}
+         */
+        private getNumberMap(posX: number, posY: number): NumberMap {
+            for(let i = 0; i < this.data.length; i++){
+                if(this.data[i].posX === posX && this.data[i].posY){
+                    return this.data[i]
+                }
+            }
+            return null
+        }
+        /**
+         * 从数组中移除对象
+         * @param map
+         */
+        private removeMap(map: NumberMap): void {
+            for(let i = 0; i < this.data.length; i++){
+                if(this.data[i].hashCode === map.hashCode){
+                    this.data.splice(i, 1)
+                    return
+                }
+            }
+        }
+
+        /**
+         * X轴排序--升序
+         * @returns {Array<NumberMap>}
+         */
+        private dataXSortAsc(): Array<NumberMap> {
+            let ascArr: Array<NumberMap> = this.data
+            for(let i = 1; i < ascArr.length; i++){
+                for(let j = 0; j < ascArr.length-i; j++){
+                    if(ascArr[j].posX > ascArr[j+1].posX){
+                        let temp: NumberMap = ascArr[j]
+                        ascArr[j] = ascArr[j+1]
+                        ascArr[j+1] = temp
+                    }
+                }
+            }
+            return ascArr;
+        }
+
+        /**
+         * X轴排序--倒叙
+         * @returns {Array<NumberMap>}
+         */
+        private dataXSortDesc(): Array<NumberMap> {
+            let ascArr: Array<NumberMap> = this.data
+            for(let i = 1; i < ascArr.length; i++){
+                for(let j = 0; j < ascArr.length-i; j++){
+                    if(ascArr[j].posX < ascArr[j+1].posX){
+                        let temp: NumberMap = ascArr[j]
+                        ascArr[j] = ascArr[j+1]
+                        ascArr[j+1] = temp
+                    }
+                }
+            }
+            return ascArr;
+        }
+
+        /**
+         * Y轴排序--升序
+         * @returns {Array<NumberMap>}
+         */
+        private dataYSortAsc(): Array<NumberMap> {
+            let ascArr: Array<NumberMap> = this.data
+            for(let i = 1; i < ascArr.length; i++){
+                for(let j = 0; j < ascArr.length-i; j++){
+                    if(ascArr[j].posY > ascArr[j+1].posY){
+                        let temp: NumberMap = ascArr[j]
+                        ascArr[j] = ascArr[j+1]
+                        ascArr[j+1] = temp
+                    }
+                }
+            }
+            return ascArr;
+        }
+
+        /**
+         * Y轴排序--倒叙
+         * @returns {Array<NumberMap>}
+         */
+        private dataYSortDesc(): Array<NumberMap> {
+            let ascArr: Array<NumberMap> = this.data
+            for(let i = 1; i < ascArr.length; i++){
+                for(let j = 0; j < ascArr.length-i; j++){
+                    if(ascArr[j].posY < ascArr[j+1].posY){
+                        let temp: NumberMap = ascArr[j]
+                        ascArr[j] = ascArr[j+1]
+                        ascArr[j+1] = temp
+                    }
+                }
+            }
+            return ascArr;
+        }
+
+        /**
+         * 随机生成一个数字元素
+         * @returns {number}
+         */
+        private randCreateOneNumber(): number {
+            return (Math.random() > 0.5)?4:2;
+        }
+
+        /**
+         * 随机返回一个空格子对象
+         * @returns {Pos}
+         */
+        private randGetOneEmptyGrid(): Pos {
+            let emptyGird: Array<Pos> = this.getEmptyGrids(),
+                length: number = emptyGird.length,
+                index = Math.floor(Math.random()*length)
+            return emptyGird[index];
         }
 
         /**
@@ -298,14 +517,15 @@ module ElsbScene {
             super()
             this.posX = posX
             this.posY = posY
+            this.value = value
             this.x = this.posX*Grid.gridSize
             this.y = this.posY*Grid.gridSize
             this.width = Grid.gridSize-Grid.gridItemSpace
             this.height = Grid.gridSize-Grid.gridItemSpace
             this.backgroundMap.addChild(this.numberMap)
             this.addChild(this.backgroundMap)
-            this.setBackgroundMap = value
-            this.setColor = value
+            this.setBackgroundMap = this.value
+            this.setColor = this.value
         }
 
         /**
@@ -335,6 +555,14 @@ module ElsbScene {
             this.numberMap.size = Skin.numberSize(value)
             this.numberMap.fontFamily = Config.setting_font
             this.numberMap.y = (this.backgroundMap.height-this.numberMap.size)*0.5
+        }
+
+        /**
+         * 数值翻倍
+         */
+        public intValue(): void {
+            this.value *= 2
+            this.setColor = this.value
         }
     }
 
