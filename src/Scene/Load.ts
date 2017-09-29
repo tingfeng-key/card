@@ -68,8 +68,8 @@ module Load {
             RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
             if(e.itemsTotal === 0){ //如果资源组为空，则直接进入菜单
                 SceneManager.interval.loadScence(new ElsbScene.BackgRound())
-                SceneManager.interval.loadScence(new ElsbScene.Panel())
-                SceneManager.interval.loadScence(new ElsbScene.Grid()) //加载游戏格子场景
+                SceneManager.interval.loadScence(ElsbScene.Panel.interval)
+                SceneManager.interval.loadScence(ElsbScene.Grid.interval) //加载游戏格子场景
                 SceneManager.interval.loadScence(new ElsbScene.NumberData()) //加载游戏数据场景
             }else{
                 RES.addEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.onGroupComplete, this);

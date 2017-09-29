@@ -9,6 +9,7 @@ module ElsbScene {
     import UniltGame = Uilt.Game;
     import Pos = Uilt.Pos;
     import AnchorUtils = Uilt.AnchorUtils;
+    import GameStatus = Uilt.GameStatus;
     export class BackgRound extends egret.Sprite {
         public constructor() {
             super()
@@ -238,15 +239,18 @@ module ElsbScene {
             this.y = Grid.interval.y
             this.width = Grid.interval.width
             this.height = Grid.interval.height
-            let emptyGrid1: Pos = this.randGetOneEmptyGrid()
-            let one1: NumberMap = this.createOne(this.randCreateOneNumber(), emptyGrid1.posX, emptyGrid1.posY)
-            this.data.push(one1)
-            this.addChild(one1)
+            //this.createOne()
+            //this.createOne()
+            let sprite: NumberMap = new NumberMap(0, 0, 4)
+            this.data.push(sprite)
+            this.addChild(sprite)
 
-            let emptyGrid2: Pos = this.randGetOneEmptyGrid()
-            let one2: NumberMap = this.createOne(this.randCreateOneNumber(), emptyGrid2.posX, emptyGrid2.posY)
-            this.data.push(one2)
-            this.addChild(one2)
+            let sprite1: NumberMap = new NumberMap(0, 2, 4)
+            this.data.push(sprite1)
+            this.addChild(sprite1)
+            let sprite2: NumberMap = new NumberMap(0, 3, 4)
+            this.data.push(sprite2)
+            this.addChild(sprite2)
 
             this.keyMap = new KeyBoard();
             //添加监听事件
@@ -254,42 +258,172 @@ module ElsbScene {
         }
 
         private onkeydown(event) {
+            let removeArr: Array<NumberMap> = [],
+                moveArr: Array<NumberMap> = []
             if(this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
                 let data: Array<NumberMap> = this.dataYSortDesc()
                 for (let i = 0; i < data.length; i++){
-                    //let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow)
-                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.DownArrow), data[i].value)
+                    console.log(data[i].posY)
+                    let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow)
+                    if(length === 0) continue
+                    let newNumber: number = data[i].posY+length
+                    console.log(data[i].posY, newNumber, length)
+                    //this.moveY(removeArr, data[i], newNumber)
                 }
             }
             else if(this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
                 let data: Array<NumberMap> = this.dataYSortAsc()
                 for (let i = 0; i < data.length; i++){
-                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.UpArrow), data[i].value)
+                    let length: number = this.moveLength(data[i], data, KeyBoard.UpArrow)
+                    if(length === 0) continue
+                    let newNumber: number = data[i].posY-length
+                    this.moveY(removeArr, data[i], newNumber)
                 }
             }
             else if(this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
                 let data: Array<NumberMap> = this.dataXSortDesc()
                 for (let i = 0; i < data.length; i++){
-                    console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.RightArrow), data[i].value)
+                    console.log("right", data[i].hashCode, "x", data[i].posX, "y", data[i].posY)
+                }
+                for (let i = 0; i < data.length; i++){
+                    let length: number = this.moveLength(data[i], data, KeyBoard.RightArrow)
+                    if(length === 0) continue
+                    let newNumber: number = data[i].posX+length
+                    this.moveX(removeArr, data[i], newNumber)
                 }
             }
             else if(this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
                 let data: Array<NumberMap> = this.dataXSortAsc()
                 for (let i = 0; i < data.length; i++){
+                    console.log("left", data[i].hashCode, "x", data[i].posX, "y", data[i].posY)
+                }
+                for (let i = 0; i < data.length; i++){
                     let length: number = this.moveLength(data[i], data, KeyBoard.keyArrow)
-                    if(this.isPos(data[i].posX-length, data[i].posY)){
-                        data[i].intValue()
-                        let map: NumberMap = this.getNumberMap(data[i].posX-length, data[i].posY)
-                        this.removeChild(map)
-                        this.removeMap(map)
-                    }
-                    let tw: egret.Tween = egret.Tween.get(data[i])
-                    tw.to({
-                        x: (data[i].posX-length
-                    }, 100, egret.Ease.bounceIn)
-                    //console.log(data[i].value, this.moveLength(data[i], data, KeyBoard.keyArrow), data[i].value)
+                    if(length === 0) continue
+                    let newNumber: number = data[i].posX-length
+                    this.moveX(removeArr, data[i], newNumber)
                 }
             }
+            /*for(let i = 0; i < moveArr.length; i++){
+                console.log(moveArr[i].hashCode,moveArr[i].posY)
+                //this.moveY(moveArr[i],)
+                this.moveY(removeArr, moveArr[i], moveArr[i].posY)
+            }*/
+            for(let i = 0; i < removeArr.length; i++){
+                let tws: egret.Tween = egret.Tween.get(removeArr[i])
+                tws.to({
+                    alpha: 0
+                }, 850).call((map) => {
+                    this.removeChild(map)
+                }, this, [removeArr[i]])
+                this.removeMap(removeArr[i])
+            }
+            egret.setTimeout(()=>{
+                if(!this.gameOver()){
+                    this.createOne()
+                }
+            }, this, 900)
+        }
+
+        private isCanIncY(data: Array<NumberMap>, PosX: number, PosY: number) {
+            for(let i = 0; i < data.length; i++){
+                if(PosX === data[i].posX && PosY > data[i].posY){
+                    return data[i].value
+                }
+            }
+        }
+
+        /**
+         * 游戏是否结束
+         * @returns {boolean}
+         */
+        private gameOver(): boolean {
+            if(this.getEmptyGrids().length > 0) return false;
+            UniltGame.interval.setGameStatus(GameStatus.Died)
+            return true;
+        }
+
+        /**
+         * X轴移动
+         * @param removeArr 移除的对象数组
+         * @param target 移除的对象
+         * @param newNumber 新的位置
+         */
+        private moveX(removeArr: Array<NumberMap>, target: NumberMap, newNumber: number){
+            let tw: egret.Tween = egret.Tween.get(target)
+            if(this.isRemove(target, newNumber, target.posY)){
+                let map: NumberMap = this.getNumberMap(newNumber, target.posY, target)
+                removeArr.push(map)
+
+                target.posX = newNumber
+                tw.to({
+                    x: NumberMap.pos(newNumber)
+                }, 800, egret.Ease.backOut)
+                tw.call((target, map)=>{
+                    target.intValue()
+                }, this, [target, map])
+            }else{
+                target.posX = newNumber
+                tw.to({
+                    x: NumberMap.pos(newNumber)
+                }, 800, egret.Ease.backOut)
+            }
+        }
+
+        /**
+         * Y轴移动
+         * @param removeArr 移除的对象数组
+         * @param target 移除的对象
+         * @param newNumber 新的位置
+         */
+        private moveY(removeArr: Array<NumberMap>, target: NumberMap, newNumber: number){
+            let tw: egret.Tween = egret.Tween.get(target)
+            console.log("move", this.isRemove(target, target.posX, newNumber))
+            target.posY = newNumber
+            target.intValue()
+            /*if(this.isRemove(target, target.posX, newNumber)){
+                let map: NumberMap = this.getNumberMap(target.posX, newNumber, target)
+                removeArr.push(map)
+
+                target.posY = newNumber
+                tw.to({
+                    y: NumberMap.pos(newNumber)
+                }, 800, egret.Ease.backOut)
+                tw.call((target, map)=>{
+                    target.intValue()
+                }, this, [target, map])
+            }else{
+                target.posY = newNumber
+                tw.to({
+                    y: NumberMap.pos(newNumber)
+                }, 800, egret.Ease.backOut)
+            }*/
+        }
+
+        /**
+         * 是否可以消除
+         * @param target 当前对象
+         * @param PosX 新的X轴对象
+         * @param PosY 新的Y轴坐标
+         * @returns {boolean}
+         */
+        public isRemove(target: NumberMap, PosX: number, PosY: number): boolean {
+            for(let i = 0; i < this.data.length; i++){
+                /*console.log(this.data[i].posX === PosX ,/!*this.data[i].posX, PosX,*!/
+                    this.data[i].posY === PosY ,
+                    this.data[i].value === target.value ,this.data[i].posY, PosY,
+                    this.data[i].hashCode !== target.hashCode)*/
+                if(
+                    this.data[i].posX === PosX &&
+                    this.data[i].posY === PosY &&
+                    this.data[i].value === target.value &&
+                    this.data[i].hashCode !== target.hashCode
+                ){
+                    console.log("hash", this.data[i].hashCode, target.hashCode)
+                    return true;
+                }
+            }
+            return false;
         }
 
         /**
@@ -301,43 +435,45 @@ module ElsbScene {
          */
         private moveLength(map: NumberMap, data: Array<NumberMap>, type: string){
             switch (type){
-                case KeyBoard.keyArrow:
+                case KeyBoard.keyArrow: //左移
                     for (let i = 0; i < data.length; i++){
                         if(map.posY===data[i].posY && map.posX > data[i].posX){
-                            if(data[i].value === map.value){
+                            if(data[i].value !== map.value){
                                 return Math.abs(data[i].posX-map.posX)-1
                             }
                             return Math.abs(data[i].posX-map.posX)
                         }
                     }
                     return map.posX
-                case KeyBoard.RightArrow:
+                case KeyBoard.RightArrow: //右移
                     for (let i = 0; i < data.length; i++){
                         if(map.posY===data[i].posY && map.posX < data[i].posX){
                             if(data[i].value === map.value){
-                                return Math.abs(data[i].posX-map.posX)+1
+                                return Math.abs(data[i].posX-map.posX)
                             }
-                            return Math.abs(data[i].posX-map.posX)
+                            return Math.abs(data[i].posX-map.posX)-1
                         }
                     }
                     return Grid.gridItemCols-map.posX-1
-                case KeyBoard.UpArrow:
+                case KeyBoard.UpArrow: //上移
                     for (let i = 0; i < data.length; i++){
                         if(map.posX===data[i].posX && map.posY > data[i].posY){
-                            if(data[i].value === map.value){
-                                return Math.abs(data[i].posX-map.posX)-1
+                            if(data[i].value !== map.value){
+                                return Math.abs(data[i].posY-map.posY)-1
                             }
-                            return Math.abs(data[i].posX-map.posX)
+                            return Math.abs(data[i].posY-map.posY)
                         }
                     }
                     return map.posY
-                case KeyBoard.DownArrow:
+                case KeyBoard.DownArrow: //下移
                     for (let i = 0; i < data.length; i++){
                         if(map.posX===data[i].posX && map.posY < data[i].posY){
                             if(data[i].value === map.value){
-                                return Math.abs(data[i].posX-map.posX)+1
+                                console.log("yes")
+                                return Math.abs(data[i].posY-map.posY)
                             }
-                            return Math.abs(data[i].posX-map.posX)
+                            console.log("no")
+                            return Math.abs(data[i].posY-map.posY)-1
                         }
                     }
                     return Grid.gridItemRows-map.posY-1
@@ -350,7 +486,7 @@ module ElsbScene {
          * @param posY
          * @returns {any}
          */
-        private getNumberMap(posX: number, posY: number): NumberMap {
+        private getNumberMap(posX: number, posY: number, target: NumberMap): NumberMap {
             for(let i = 0; i < this.data.length; i++){
                 if(this.data[i].posX === posX && this.data[i].posY){
                     return this.data[i]
@@ -464,13 +600,13 @@ module ElsbScene {
 
         /**
          * 创建单数据
-         * @param num
-         * @param posX
-         * @param posY
          * @returns {NumberMap}
          */
-        public createOne(num: number, posX: number, posY: number): NumberMap {
-            let sprite: NumberMap = new NumberMap(posX, posY, num)
+        public createOne(): NumberMap {
+            let emptyGrid1: Pos = this.randGetOneEmptyGrid()
+            let sprite: NumberMap = new NumberMap(emptyGrid1.posX, emptyGrid1.posY, this.randCreateOneNumber())
+            this.data.push(sprite)
+            this.addChild(sprite)
             return sprite
         }
 
@@ -511,6 +647,8 @@ module ElsbScene {
         public posX: number = 0;        //数字位置X值
         public posY: number = 0;        //数字位置Y值
         public value: number;           //数字值
+        public isInc: boolean = false;  //是否倍增数字
+        public isRemove: boolean = false; //是否移除
         public backgroundMap: egret.Sprite = new egret.Sprite; //数字背景对象
         public numberMap: egret.TextField = new egret.TextField; //数字内容对象
         public constructor(posX: number, posY: number, value: number) {
@@ -518,14 +656,23 @@ module ElsbScene {
             this.posX = posX
             this.posY = posY
             this.value = value
-            this.x = this.posX*Grid.gridSize
-            this.y = this.posY*Grid.gridSize
+            this.x = NumberMap.pos(this.posX)
+            this.y = NumberMap.pos(this.posY)
             this.width = Grid.gridSize-Grid.gridItemSpace
             this.height = Grid.gridSize-Grid.gridItemSpace
             this.backgroundMap.addChild(this.numberMap)
             this.addChild(this.backgroundMap)
             this.setBackgroundMap = this.value
             this.setColor = this.value
+        }
+
+        /**
+         * 位置转换
+         * @param value
+         * @returns {number}
+         */
+        public static pos(value: number): number {
+            return value*Grid.gridSize
         }
 
         /**
@@ -562,6 +709,7 @@ module ElsbScene {
          */
         public intValue(): void {
             this.value *= 2
+            Panel.interval.score = this.value
             this.setColor = this.value
         }
     }
