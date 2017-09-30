@@ -243,9 +243,9 @@ module ElsbScene {
             this.y = Grid.interval.y
             this.width = Grid.interval.width
             this.height = Grid.interval.height
-            //this.createOne()
-            //this.createOne()
-            let sprite: NumberMap = new NumberMap(3, 0, 8)
+            this.createOne()
+            this.createOne()
+            /*let sprite: NumberMap = new NumberMap(3, 0, 8)
             this.data.push(sprite)
             this.addChild(sprite)
 
@@ -254,13 +254,17 @@ module ElsbScene {
             this.addChild(sprite1)
             let sprite2: NumberMap = new NumberMap(0, 0, 4)
             this.data.push(sprite2)
-            this.addChild(sprite2)
+            this.addChild(sprite2)*/
 
             this.keyMap = new KeyBoard();
             //添加监听事件
             this.keyMap.addEventListener(KeyBoard.onkeydown,this.onkeydown,this);
         }
 
+        /**
+         * 键盘按下事件
+         * @param event
+         */
         private onkeydown(event) {
             if(this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
                 this.down()
@@ -272,11 +276,9 @@ module ElsbScene {
                 this.left()
             }
 
-            egret.setTimeout(()=>{
-                if(!this.gameOver()){
-                    this.createOne()
-                }
-            }, this, 900)
+            if(!this.gameOver()){
+                this.createOne()
+            }
         }
 
         /**
@@ -387,24 +389,32 @@ module ElsbScene {
                 if(moveArr[i].isInc){
                     tw.to({
                         x: NumberMap.pos(moveArr[i].posX),
-                        y: NumberMap.pos(moveArr[i].posY)
-                    }, 800, egret.Ease.backOut)
+                        y: NumberMap.pos(moveArr[i].posY),
+                        scaleX: 0.5,
+                        scaleY: 0.5,
+                    }, 200, egret.Ease.circInOut)
                     tw.call((target)=>{
                         target.intValue()
                     }, this, [moveArr[i]])
+                    tw.to({
+                        scaleX: 1,
+                        scaleY: 1
+                    }, 400, egret.Ease.circInOut)
+
                 }else{
                     tw.to({
                         x: NumberMap.pos(moveArr[i].posX),
                         y: NumberMap.pos(moveArr[i].posY)
-                    }, 800, egret.Ease.backOut)
+                    }, 100, egret.Ease.circInOut)
                 }
                 moveArr[i].isInc = false
             }
             for(let i = 0; i < removeArr.length; i++){
                 let tws: egret.Tween = egret.Tween.get(removeArr[i])
                 tws.to({
-                    alpha: 0
-                }, 600).call((map) => {
+                    scaleX: 0,
+                    scaleY: 0
+                }, 300).call((map) => {
                     this.removeChild(map)
                 }, this, [removeArr[i]])
                 this.removeMap(removeArr[i])
@@ -595,7 +605,15 @@ module ElsbScene {
             let emptyGrid1: Pos = this.randGetOneEmptyGrid()
             let sprite: NumberMap = new NumberMap(emptyGrid1.posX, emptyGrid1.posY, this.randCreateOneNumber())
             this.data.push(sprite)
+            //sprite.alpha = 0
+            sprite.scaleX = 0
+            sprite.scaleY = 0
             this.addChild(sprite)
+            let tw: egret.Tween = egret.Tween.get(sprite)
+            tw.to({
+                scaleX: 1,
+                scaleY: 1
+            }, 300)
             return sprite
         }
 
@@ -645,10 +663,12 @@ module ElsbScene {
             this.posX = posX
             this.posY = posY
             this.value = value
-            this.x = NumberMap.pos(this.posX)
-            this.y = NumberMap.pos(this.posY)
             this.width = Grid.gridSize-Grid.gridItemSpace
             this.height = Grid.gridSize-Grid.gridItemSpace
+            this.x = NumberMap.pos(this.posX)
+            this.y = NumberMap.pos(this.posY)
+            this.anchorOffsetX = this.width*0.5
+            this.anchorOffsetY = this.height*0.5
             this.backgroundMap.addChild(this.numberMap)
             this.addChild(this.backgroundMap)
             this.setBackgroundMap = this.value
@@ -661,7 +681,7 @@ module ElsbScene {
          * @returns {number}
          */
         public static pos(value: number): number {
-            return value*Grid.gridSize
+            return value*Grid.gridSize+(Grid.gridSize-Grid.gridItemSpace)*0.5
         }
 
         /**
