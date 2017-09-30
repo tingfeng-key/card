@@ -2,7 +2,6 @@
  * Created by feizhugame on 2017/9/28.
  */
 module ElsbScene {
-    //游戏主菜单
     import Tool = Uilt.Tool;
     import Config = Uilt.Config;
     //菜单
@@ -10,6 +9,8 @@ module ElsbScene {
     import Pos = Uilt.Pos;
     import AnchorUtils = Uilt.AnchorUtils;
     import GameStatus = Uilt.GameStatus;
+
+    //背景
     export class BackgRound extends egret.Sprite {
         public constructor() {
             super()
@@ -17,6 +18,8 @@ module ElsbScene {
             this.addChild(bgr)
         }
     }
+
+    //游戏主菜单
     export class Menu extends egret.Sprite {
         public gameName: egret.TextField = new egret.TextField //游戏名称
         public btnGroup: egret.Sprite //菜单按钮组
@@ -230,6 +233,7 @@ module ElsbScene {
             this.scoreText.text = "0"
         }
     }
+    //数字数据操作
     export class NumberData extends egret.Sprite {
         public data: Array<NumberMap> = [] //数组
         private keyMap: KeyBoard;
@@ -241,14 +245,14 @@ module ElsbScene {
             this.height = Grid.interval.height
             //this.createOne()
             //this.createOne()
-            let sprite: NumberMap = new NumberMap(0, 0, 4)
+            let sprite: NumberMap = new NumberMap(3, 0, 8)
             this.data.push(sprite)
             this.addChild(sprite)
 
-            let sprite1: NumberMap = new NumberMap(0, 2, 4)
+            let sprite1: NumberMap = new NumberMap(1, 0, 4)
             this.data.push(sprite1)
             this.addChild(sprite1)
-            let sprite2: NumberMap = new NumberMap(0, 3, 4)
+            let sprite2: NumberMap = new NumberMap(0, 0, 4)
             this.data.push(sprite2)
             this.addChild(sprite2)
 
@@ -258,71 +262,153 @@ module ElsbScene {
         }
 
         private onkeydown(event) {
-            let removeArr: Array<NumberMap> = [],
-                moveArr: Array<NumberMap> = []
             if(this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
-                let data: Array<NumberMap> = this.dataYSortDesc()
-                for (let i = 0; i < data.length; i++){
-                    console.log(data[i].posY)
-                    let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow)
-                    if(length === 0) continue
-                    let newNumber: number = data[i].posY+length
-                    console.log(data[i].posY, newNumber, length)
-                    //this.moveY(removeArr, data[i], newNumber)
-                }
+                this.down()
+            } else if(this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
+                this.up()
+            } else if(this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
+                this.right()
+            } else if(this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
+                this.left()
             }
-            else if(this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
-                let data: Array<NumberMap> = this.dataYSortAsc()
-                for (let i = 0; i < data.length; i++){
-                    let length: number = this.moveLength(data[i], data, KeyBoard.UpArrow)
-                    if(length === 0) continue
-                    let newNumber: number = data[i].posY-length
-                    this.moveY(removeArr, data[i], newNumber)
-                }
-            }
-            else if(this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
-                let data: Array<NumberMap> = this.dataXSortDesc()
-                for (let i = 0; i < data.length; i++){
-                    console.log("right", data[i].hashCode, "x", data[i].posX, "y", data[i].posY)
-                }
-                for (let i = 0; i < data.length; i++){
-                    let length: number = this.moveLength(data[i], data, KeyBoard.RightArrow)
-                    if(length === 0) continue
-                    let newNumber: number = data[i].posX+length
-                    this.moveX(removeArr, data[i], newNumber)
-                }
-            }
-            else if(this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
-                let data: Array<NumberMap> = this.dataXSortAsc()
-                for (let i = 0; i < data.length; i++){
-                    console.log("left", data[i].hashCode, "x", data[i].posX, "y", data[i].posY)
-                }
-                for (let i = 0; i < data.length; i++){
-                    let length: number = this.moveLength(data[i], data, KeyBoard.keyArrow)
-                    if(length === 0) continue
-                    let newNumber: number = data[i].posX-length
-                    this.moveX(removeArr, data[i], newNumber)
-                }
-            }
-            /*for(let i = 0; i < moveArr.length; i++){
-                console.log(moveArr[i].hashCode,moveArr[i].posY)
-                //this.moveY(moveArr[i],)
-                this.moveY(removeArr, moveArr[i], moveArr[i].posY)
-            }*/
-            for(let i = 0; i < removeArr.length; i++){
-                let tws: egret.Tween = egret.Tween.get(removeArr[i])
-                tws.to({
-                    alpha: 0
-                }, 850).call((map) => {
-                    this.removeChild(map)
-                }, this, [removeArr[i]])
-                this.removeMap(removeArr[i])
-            }
+
             egret.setTimeout(()=>{
                 if(!this.gameOver()){
                     this.createOne()
                 }
             }, this, 900)
+        }
+
+        /**
+         * 下移
+         */
+        private down(): void {
+            let data: Array<NumberMap> = this.dataYSortAsc(),
+                removeArr: Array<NumberMap> = [],
+                moveArr: Array<NumberMap> = []
+            for(let i = (data.length-1); i >= 0; i--){
+                let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow),
+                    newPosY: number = data[i].posY+length,
+                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY+1, data[i])
+                if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
+                    data[i].posY += length+1
+                    removeArr.push(nextGrid)
+                    data[i].isInc = true
+                    nextGrid.isRemove = true
+                }else{
+                    data[i].posY += length
+                }
+                moveArr.push(data[i])
+            }
+            this.moveAndRemove(moveArr, removeArr);
+        }
+
+        /**
+         * 上移
+         */
+        private up(): void {
+            let data: Array<NumberMap> = this.dataYSortDesc(),
+                removeArr: Array<NumberMap> = [],
+                moveArr: Array<NumberMap> = []
+            for(let i = (data.length-1); i >= 0; i--){
+                let length: number = this.moveLength(data[i], data, KeyBoard.UpArrow),
+                    newPosY: number = data[i].posY-length,
+                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY-1, data[i])
+                if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
+                    data[i].posY -= length+1
+                    removeArr.push(nextGrid)
+                    data[i].isInc = true
+                    nextGrid.isRemove = true
+                    console.log("me", data[i].posY,data[i].hashCode, nextGrid.hashCode)
+                }else{
+                    data[i].posY -= length
+                }
+                moveArr.push(data[i])
+            }
+            this.moveAndRemove(moveArr, removeArr);
+        }
+
+        /**
+         * 左移
+         */
+        private left(): void {
+            let data: Array<NumberMap> = this.dataXSortDesc(),
+                removeArr: Array<NumberMap> = [],
+                moveArr: Array<NumberMap> = []
+            for (let i = (data.length-1); i >= 0; i--){
+                let length: number = this.moveLength(data[i], data, KeyBoard.keyArrow),
+                    newPosX: number = data[i].posX-length,
+                    nextGrid: NumberMap = this.getNumberMap(newPosX-1, data[i].posY, data[i])
+                if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
+                    data[i].posX -= length+1
+                    removeArr.push(nextGrid)
+                    data[i].isInc = true
+                    nextGrid.isRemove = true
+                }else{
+                    data[i].posX -= length
+                }
+                moveArr.push(data[i])
+            }
+            this.moveAndRemove(moveArr, removeArr);
+        }
+
+        /**
+         * 右移
+         */
+        private right(): void {
+            let data: Array<NumberMap> = this.dataXSortAsc(),
+                removeArr: Array<NumberMap> = [],
+                moveArr: Array<NumberMap> = []
+            for (let i = (data.length-1); i >= 0; i--){
+                let length: number = this.moveLength(data[i], data, KeyBoard.RightArrow),
+                    newPosX: number = data[i].posX+length,
+                    nextGrid: NumberMap = this.getNumberMap(newPosX+1, data[i].posY, data[i])
+                if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
+                    data[i].posX += length+1
+                    removeArr.push(nextGrid)
+                    data[i].isInc = true
+                    nextGrid.isRemove = true
+                }else{
+                    data[i].posX += length
+                }
+                moveArr.push(data[i])
+            }
+            this.moveAndRemove(moveArr, removeArr);
+        }
+
+        /**
+         * 移动和消除方块
+         * @param moveArr 移动的方块组
+         * @param removeArr 消除的方块组
+         */
+        private moveAndRemove(moveArr: Array<NumberMap>, removeArr: Array<NumberMap>): void {
+            for(let i = 0; i < moveArr.length; i++){
+                let tw: egret.Tween = egret.Tween.get(moveArr[i])
+                if(moveArr[i].isInc){
+                    tw.to({
+                        x: NumberMap.pos(moveArr[i].posX),
+                        y: NumberMap.pos(moveArr[i].posY)
+                    }, 800, egret.Ease.backOut)
+                    tw.call((target)=>{
+                        target.intValue()
+                    }, this, [moveArr[i]])
+                }else{
+                    tw.to({
+                        x: NumberMap.pos(moveArr[i].posX),
+                        y: NumberMap.pos(moveArr[i].posY)
+                    }, 800, egret.Ease.backOut)
+                }
+                moveArr[i].isInc = false
+            }
+            for(let i = 0; i < removeArr.length; i++){
+                let tws: egret.Tween = egret.Tween.get(removeArr[i])
+                tws.to({
+                    alpha: 0
+                }, 600).call((map) => {
+                    this.removeChild(map)
+                }, this, [removeArr[i]])
+                this.removeMap(removeArr[i])
+            }
         }
 
         private isCanIncY(data: Array<NumberMap>, PosX: number, PosY: number) {
@@ -344,89 +430,6 @@ module ElsbScene {
         }
 
         /**
-         * X轴移动
-         * @param removeArr 移除的对象数组
-         * @param target 移除的对象
-         * @param newNumber 新的位置
-         */
-        private moveX(removeArr: Array<NumberMap>, target: NumberMap, newNumber: number){
-            let tw: egret.Tween = egret.Tween.get(target)
-            if(this.isRemove(target, newNumber, target.posY)){
-                let map: NumberMap = this.getNumberMap(newNumber, target.posY, target)
-                removeArr.push(map)
-
-                target.posX = newNumber
-                tw.to({
-                    x: NumberMap.pos(newNumber)
-                }, 800, egret.Ease.backOut)
-                tw.call((target, map)=>{
-                    target.intValue()
-                }, this, [target, map])
-            }else{
-                target.posX = newNumber
-                tw.to({
-                    x: NumberMap.pos(newNumber)
-                }, 800, egret.Ease.backOut)
-            }
-        }
-
-        /**
-         * Y轴移动
-         * @param removeArr 移除的对象数组
-         * @param target 移除的对象
-         * @param newNumber 新的位置
-         */
-        private moveY(removeArr: Array<NumberMap>, target: NumberMap, newNumber: number){
-            let tw: egret.Tween = egret.Tween.get(target)
-            console.log("move", this.isRemove(target, target.posX, newNumber))
-            target.posY = newNumber
-            target.intValue()
-            /*if(this.isRemove(target, target.posX, newNumber)){
-                let map: NumberMap = this.getNumberMap(target.posX, newNumber, target)
-                removeArr.push(map)
-
-                target.posY = newNumber
-                tw.to({
-                    y: NumberMap.pos(newNumber)
-                }, 800, egret.Ease.backOut)
-                tw.call((target, map)=>{
-                    target.intValue()
-                }, this, [target, map])
-            }else{
-                target.posY = newNumber
-                tw.to({
-                    y: NumberMap.pos(newNumber)
-                }, 800, egret.Ease.backOut)
-            }*/
-        }
-
-        /**
-         * 是否可以消除
-         * @param target 当前对象
-         * @param PosX 新的X轴对象
-         * @param PosY 新的Y轴坐标
-         * @returns {boolean}
-         */
-        public isRemove(target: NumberMap, PosX: number, PosY: number): boolean {
-            for(let i = 0; i < this.data.length; i++){
-                /*console.log(this.data[i].posX === PosX ,/!*this.data[i].posX, PosX,*!/
-                    this.data[i].posY === PosY ,
-                    this.data[i].value === target.value ,this.data[i].posY, PosY,
-                    this.data[i].hashCode !== target.hashCode)*/
-                if(
-                    this.data[i].posX === PosX &&
-                    this.data[i].posY === PosY &&
-                    this.data[i].value === target.value &&
-                    this.data[i].hashCode !== target.hashCode
-                ){
-                    console.log("hash", this.data[i].hashCode, target.hashCode)
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        /**
          * 移动的数值
          * @param map 当前对象
          * @param data 排序后的对象组
@@ -438,19 +441,13 @@ module ElsbScene {
                 case KeyBoard.keyArrow: //左移
                     for (let i = 0; i < data.length; i++){
                         if(map.posY===data[i].posY && map.posX > data[i].posX){
-                            if(data[i].value !== map.value){
-                                return Math.abs(data[i].posX-map.posX)-1
-                            }
-                            return Math.abs(data[i].posX-map.posX)
+                            return Math.abs(data[i].posX-map.posX)-1
                         }
                     }
                     return map.posX
                 case KeyBoard.RightArrow: //右移
                     for (let i = 0; i < data.length; i++){
                         if(map.posY===data[i].posY && map.posX < data[i].posX){
-                            if(data[i].value === map.value){
-                                return Math.abs(data[i].posX-map.posX)
-                            }
                             return Math.abs(data[i].posX-map.posX)-1
                         }
                     }
@@ -458,21 +455,13 @@ module ElsbScene {
                 case KeyBoard.UpArrow: //上移
                     for (let i = 0; i < data.length; i++){
                         if(map.posX===data[i].posX && map.posY > data[i].posY){
-                            if(data[i].value !== map.value){
-                                return Math.abs(data[i].posY-map.posY)-1
-                            }
-                            return Math.abs(data[i].posY-map.posY)
+                            return Math.abs(data[i].posY-map.posY)-1
                         }
                     }
                     return map.posY
                 case KeyBoard.DownArrow: //下移
                     for (let i = 0; i < data.length; i++){
                         if(map.posX===data[i].posX && map.posY < data[i].posY){
-                            if(data[i].value === map.value){
-                                console.log("yes")
-                                return Math.abs(data[i].posY-map.posY)
-                            }
-                            console.log("no")
                             return Math.abs(data[i].posY-map.posY)-1
                         }
                     }
@@ -488,7 +477,7 @@ module ElsbScene {
          */
         private getNumberMap(posX: number, posY: number, target: NumberMap): NumberMap {
             for(let i = 0; i < this.data.length; i++){
-                if(this.data[i].posX === posX && this.data[i].posY){
+                if(this.data[i].posX === posX && this.data[i].posY === posY){
                     return this.data[i]
                 }
             }
@@ -570,7 +559,7 @@ module ElsbScene {
             for(let i = 1; i < ascArr.length; i++){
                 for(let j = 0; j < ascArr.length-i; j++){
                     if(ascArr[j].posY < ascArr[j+1].posY){
-                        let temp: NumberMap = ascArr[j]
+                        let temp = ascArr[j]
                         ascArr[j] = ascArr[j+1]
                         ascArr[j+1] = temp
                     }
@@ -711,6 +700,7 @@ module ElsbScene {
             this.value *= 2
             Panel.interval.score = this.value
             this.setColor = this.value
+            this.setBackgroundMap = this.value
         }
     }
 
