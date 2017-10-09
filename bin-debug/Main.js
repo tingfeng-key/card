@@ -12,10 +12,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 var SceneManager = Uilt.SceneManager;
-var Menu = SceneCard.Menu;
 var Stage = Uilt.Stage;
-var Card = SceneCard.Card;
-var Road = SceneCard.Road;
+var ResourceEvent = RES.ResourceEvent;
+var Log = Uilt.Log;
+var UiltGame = Uilt.UiltGame;
+var Menu = ElsbScene.Menu;
 var LoadSkinConfig = Load.LoadSkinConfig;
 var Main = (function (_super) {
     __extends(Main, _super);
@@ -25,13 +26,22 @@ var Main = (function (_super) {
         return _this;
     }
     Main.prototype.onAddToStage = function (event) {
+        RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+        RES.loadConfig("resource/default.res.json", "resource/");
+    };
+    Main.prototype.onResCommon = function (e) {
+        RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+        RES.addEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.gameConfigCompleteFunc, this);
+        RES.loadGroup("config");
+    };
+    Main.prototype.gameConfigCompleteFunc = function (e) {
+        RES.removeEventListener(RES.ResourceEvent.GROUP_COMPLETE, this.gameConfigCompleteFunc, this);
+        UiltGame.interval.configMap = RES.getRes("gameConfig_json");
         Stage.interval;
         var sceneManager = SceneManager.interval;
         this.stage.addChild(sceneManager);
         var menu = new Menu;
-        var card = new Card;
-        var road = new Road;
-        var load = new LoadSkinConfig("default");
+        var load = new LoadSkinConfig();
         sceneManager.loadScence(load);
     };
     return Main;

@@ -18,7 +18,7 @@ var SceneCard;
 (function (SceneCard) {
     var Stage = Uilt.Stage;
     var Tool = Uilt.Tool;
-    var Config = Uilt.Config;
+    var UniltGame = Uilt.UiltGame;
     var Road = (function (_super) {
         __extends(Road, _super);
         function Road() {
@@ -141,7 +141,7 @@ var SceneCard;
             _this.gameName.width = 400;
             _this.gameName.height = 80;
             _this.gameName.size = 80;
-            _this.gameName.text = Config.gameName;
+            _this.gameName.text = UniltGame.interval.configMap.gameName;
             _this.gameName.fontFamily = "楷体";
             _this.gameName.textAlign = "center";
             _this.gameName.textColor = _this.btnColor;

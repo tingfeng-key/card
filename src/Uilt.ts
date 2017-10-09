@@ -1,6 +1,15 @@
 module Uilt {
 	//配置类
-	export class Config {
+	/*export class Config {
+
+		public constructor() {
+			RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+			RES.loadConfig("resource/gameConfig.json", "resource", "json")
+		}
+		private onResCommon(e) {
+			RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+			Logger.info(e.target)
+		}
 		public static debug: boolean = true; //调试模式
 		public static gameName: string = "2048"; //游戏名称
 		public static StateW: number = 640; //舞台宽度
@@ -17,13 +26,33 @@ module Uilt {
 		public static setting_grade: number = 4;//设置难度
 		public static setting_font: string = "微软雅黑"; //设置字体
 		public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
+	}*/
+
+	//日志类
+	export class Log {
+		public static info(msg: string): void {
+			console.info(msg)
+		}
+		public static log(msg: string): void {
+			console.log(msg)
+		}
+		public static error(msg: string): void {
+			console.error(msg)
+		}
+		public static warn(msg: string): void {
+			console.warn(msg)
+		}
+		public static debug(msg: string): void {
+			console.info(msg)
+		}
 	}
 	//游戏基本属性类
-	export class Game {
+	export class UiltGame {
 		private Status:GameStatus;//当前的游戏状态
 		private NowTimer:number = 0;//游戏时间
 		private Timeer:number = 10;// 倒计时
 		private Score:number = 0;//分数
+		public configMap: any = null; //配置对象
 		public constructor() {
 		}
 
@@ -103,22 +132,23 @@ module Uilt {
 			this.NowTimer = 0;
 		}
 
-		public static _interval:Game;
-		public static get interval(): Game{
-			return (this._interval || (this._interval = new Game));
+		public static _interval:UiltGame;
+		public static get interval(): UiltGame{
+			return (this._interval || (this._interval = new UiltGame));
 		}
 	}
 	//场景管理类
 	export class SceneManager extends egret.Sprite  {
+		private targets: Array<egret.Sprite> = []; //显示对象
 		public static _interval:SceneManager;
 		public static get interval(): SceneManager {
 			return (this._interval || (this._interval = new SceneManager));
 		}
 		public constructor() {
-			super()
-			this.x = 0
-			this.y = 0
-			this.width = Stage.stageW
+			super();
+			this.x = 0;
+			this.y = 0;
+			this.width = Stage.stageW;
 			this.height = Stage.stageH
 		}
 		/**
@@ -126,7 +156,8 @@ module Uilt {
 		 * @param target
 		 */
 		public loadScence(target: egret.Sprite){
-			this.addChild(target)
+			this.addChild(target);
+			this.targets.push(target);
 		}
 
 		/**
@@ -135,6 +166,22 @@ module Uilt {
 		 */
 		public removeScence(target: egret.Sprite) {
 			this.removeChild(target)
+			for (let i = 0; i < this.targets.length; i++){
+				this.removeChild(this.targets[i]);
+				if(this.targets[i].hashCode === target.hashCode){
+					this.targets.splice(i, 1)
+				}
+			}
+		}
+
+		/**
+		 * 清空场景
+		 */
+		public removeAllScence(): void {
+			for (let i = 0; i < this.targets.length; i++){
+				this.removeChild(this.targets[i]);
+			}
+			this.targets = []
 		}
 	}
 	//工具 类
@@ -172,7 +219,7 @@ module Uilt {
 		 */
 		public static createLineTo(
 			x:number = 0, y: number = 0, x2:number, y2: number,
-			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
+			lineW:number = UiltGame.interval.configMap.panelLineWidth, lineC: number = UiltGame.interval.configMap.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
 			shp.x = x
@@ -198,7 +245,7 @@ module Uilt {
 		 */
 		public static createCurveTo(
 			x:number = 0, y: number = 0, x1:number, y1: number, w:number, h: number,
-			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
+			lineW:number = UiltGame.interval.configMap.panelLineWidth, lineC: number = UiltGame.interval.configMap.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
 			shp.graphics.lineStyle( lineW, lineC );
@@ -308,8 +355,8 @@ module Uilt {
 	export class Stage {
 		public static _interval:Stage;
 		public static get interval(): Stage{
-			this.stage.width = Config.StateW
-			this.stage.height = Config.StateH
+			this.stage.width = UiltGame.interval.configMap.StateW
+			this.stage.height = UiltGame.interval.configMap.StateH
 			return (this._interval || (this._interval = new Stage));
 		}
 		/**
@@ -475,7 +522,7 @@ module Uilt {
 		 */
 		public init(): void {
 			let urlloader = new egret.URLLoader(),
-				req = new egret.URLRequest(Config.weixinSignUrl);
+				req = new egret.URLRequest(UiltGame.interval.configMap.weixinSignUrl);
 			urlloader.data = {url: window.location.href}
 			urlloader.load(req);
 			req.method = egret.URLRequestMethod.GET;

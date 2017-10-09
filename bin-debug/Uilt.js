@@ -14,38 +14,69 @@ var __extends = (this && this.__extends) || (function () {
 var Uilt;
 (function (Uilt) {
     //配置类
-    var Config = (function () {
-        function Config() {
+    /*export class Config {
+
+        public constructor() {
+            RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+            RES.loadConfig("resource/gameConfig.json", "resource", "json")
         }
-        Config.debug = true; //调试模式
-        Config.gameName = "2048"; //游戏名称
-        Config.StateW = 640; //舞台宽度
-        Config.StateH = 1136; //舞台高度
-        Config.panelLineWidth = 2; //线条宽度
-        Config.panelLineColor = 0x00ff00; //线条颜色
-        Config.LoadGameConfigUrl = '/diyGames/getConfig/'; //加载游戏配置URL
-        Config.weixinSignUrl = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
+        private onResCommon(e) {
+            RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
+            Logger.info(e.target)
+        }
+        public static debug: boolean = true; //调试模式
+        public static gameName: string = "2048"; //游戏名称
+        public static StateW: number = 640; //舞台宽度
+        public static StateH: number = 1136; //舞台高度
+        public static panelLineWidth: number = 2; //线条宽度
+        public static panelLineColor: number = 0x00ff00; //线条颜色
+
+        public static LoadGameConfigUrl: string = '/diyGames/getConfig/' //加载游戏配置URL
+
+        public static weixinSignUrl: string = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
+
         //设置
-        Config.setting_skin = 1; //设置皮肤
-        Config.setting_grade = 4; //设置难度
-        Config.setting_font = "微软雅黑"; //设置字体
-        Config.setting_rewardArr = "[{num: 2048, url: 'http://www.fz222.com'}]"; //奖励机制
-        return Config;
+        public static setting_skin: number = 1; //设置皮肤
+        public static setting_grade: number = 4;//设置难度
+        public static setting_font: string = "微软雅黑"; //设置字体
+        public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
+    }*/
+    //日志类
+    var Log = (function () {
+        function Log() {
+        }
+        Log.info = function (msg) {
+            console.info(msg);
+        };
+        Log.log = function (msg) {
+            console.log(msg);
+        };
+        Log.error = function (msg) {
+            console.error(msg);
+        };
+        Log.warn = function (msg) {
+            console.warn(msg);
+        };
+        Log.debug = function (msg) {
+            console.info(msg);
+        };
+        return Log;
     }());
-    Uilt.Config = Config;
-    __reflect(Config.prototype, "Uilt.Config");
+    Uilt.Log = Log;
+    __reflect(Log.prototype, "Uilt.Log");
     //游戏基本属性类
-    var Game = (function () {
-        function Game() {
+    var UiltGame = (function () {
+        function UiltGame() {
             this.NowTimer = 0; //游戏时间
             this.Timeer = 10; // 倒计时
             this.Score = 0; //分数
+            this.configMap = null; //配置对象
         }
         /**
          * 获取游戏状态
          * @returns {GameStatus}
          */
-        Game.prototype.getGameStatus = function () {
+        UiltGame.prototype.getGameStatus = function () {
             return this.Status;
         };
         /**
@@ -53,21 +84,21 @@ var Uilt;
          * @param status
          * @returns {GameStatus}
          */
-        Game.prototype.setGameStatus = function (status) {
+        UiltGame.prototype.setGameStatus = function (status) {
             return this.Status = status;
         };
         /**
          * 获取当前时间
          * @returns {number}
          */
-        Game.prototype.getNowTime = function () {
+        UiltGame.prototype.getNowTime = function () {
             return this.NowTimer;
         };
         /**
          * 当前游戏时间递增
          * @param num
          */
-        Game.prototype.incNowTimeer = function (num) {
+        UiltGame.prototype.incNowTimeer = function (num) {
             if (num === void 0) { num = 1; }
             this.NowTimer += num;
         };
@@ -75,14 +106,14 @@ var Uilt;
          * 获取当前倒计时
          * @returns {number}
          */
-        Game.prototype.getTime = function () {
+        UiltGame.prototype.getTime = function () {
             return this.Timeer;
         };
         /**
          * 倒计时自减
          * @param num
          */
-        Game.prototype.decTimeer = function (num) {
+        UiltGame.prototype.decTimeer = function (num) {
             if (num === void 0) { num = 1; }
             this.Timeer -= num;
         };
@@ -90,14 +121,14 @@ var Uilt;
          * 获取当前分数
          * @returns {number}
          */
-        Game.prototype.getScore = function () {
+        UiltGame.prototype.getScore = function () {
             return this.Score;
         };
         /**
          * 当前分数自减
          * @param num
          */
-        Game.prototype.decScore = function (num) {
+        UiltGame.prototype.decScore = function (num) {
             if (num === void 0) { num = 1; }
             this.Score -= num;
         };
@@ -105,31 +136,32 @@ var Uilt;
          * 当前分数自增
          * @param num
          */
-        Game.prototype.incScore = function (num) {
+        UiltGame.prototype.incScore = function (num) {
             if (num === void 0) { num = 1; }
             this.Score += num;
         };
-        Game.prototype.restart = function () {
+        UiltGame.prototype.restart = function () {
             this.Score = 0;
             this.Status = GameStatus.Start;
             this.NowTimer = 0;
         };
-        Object.defineProperty(Game, "interval", {
+        Object.defineProperty(UiltGame, "interval", {
             get: function () {
-                return (this._interval || (this._interval = new Game));
+                return (this._interval || (this._interval = new UiltGame));
             },
             enumerable: true,
             configurable: true
         });
-        return Game;
+        return UiltGame;
     }());
-    Uilt.Game = Game;
-    __reflect(Game.prototype, "Uilt.Game");
+    Uilt.UiltGame = UiltGame;
+    __reflect(UiltGame.prototype, "Uilt.UiltGame");
     //场景管理类
     var SceneManager = (function (_super) {
         __extends(SceneManager, _super);
         function SceneManager() {
             var _this = _super.call(this) || this;
+            _this.targets = []; //显示对象
             _this.x = 0;
             _this.y = 0;
             _this.width = Stage.stageW;
@@ -149,6 +181,7 @@ var Uilt;
          */
         SceneManager.prototype.loadScence = function (target) {
             this.addChild(target);
+            this.targets.push(target);
         };
         /**
          * 移除场景
@@ -156,6 +189,21 @@ var Uilt;
          */
         SceneManager.prototype.removeScence = function (target) {
             this.removeChild(target);
+            for (var i = 0; i < this.targets.length; i++) {
+                this.removeChild(this.targets[i]);
+                if (this.targets[i].hashCode === target.hashCode) {
+                    this.targets.splice(i, 1);
+                }
+            }
+        };
+        /**
+         * 清空场景
+         */
+        SceneManager.prototype.removeAllScence = function () {
+            for (var i = 0; i < this.targets.length; i++) {
+                this.removeChild(this.targets[i]);
+            }
+            this.targets = [];
         };
         return SceneManager;
     }(egret.Sprite));
@@ -199,8 +247,8 @@ var Uilt;
         Tool.createLineTo = function (x, y, x2, y2, lineW, lineC) {
             if (x === void 0) { x = 0; }
             if (y === void 0) { y = 0; }
-            if (lineW === void 0) { lineW = Config.panelLineWidth; }
-            if (lineC === void 0) { lineC = Config.panelLineColor; }
+            if (lineW === void 0) { lineW = UiltGame.interval.configMap.panelLineWidth; }
+            if (lineC === void 0) { lineC = UiltGame.interval.configMap.panelLineColor; }
             var shp = new egret.Shape();
             shp.x = x;
             shp.y = y;
@@ -225,8 +273,8 @@ var Uilt;
         Tool.createCurveTo = function (x, y, x1, y1, w, h, lineW, lineC) {
             if (x === void 0) { x = 0; }
             if (y === void 0) { y = 0; }
-            if (lineW === void 0) { lineW = Config.panelLineWidth; }
-            if (lineC === void 0) { lineC = Config.panelLineColor; }
+            if (lineW === void 0) { lineW = UiltGame.interval.configMap.panelLineWidth; }
+            if (lineC === void 0) { lineC = UiltGame.interval.configMap.panelLineColor; }
             var shp = new egret.Shape();
             shp.graphics.lineStyle(lineW, lineC);
             shp.graphics.moveTo(x, y);
@@ -329,8 +377,8 @@ var Uilt;
         }
         Object.defineProperty(Stage, "interval", {
             get: function () {
-                this.stage.width = Config.StateW;
-                this.stage.height = Config.StateH;
+                this.stage.width = UiltGame.interval.configMap.StateW;
+                this.stage.height = UiltGame.interval.configMap.StateH;
                 return (this._interval || (this._interval = new Stage));
             },
             enumerable: true,
@@ -492,7 +540,7 @@ var Uilt;
          */
         WeixinShare.prototype.init = function () {
             var _this = this;
-            var urlloader = new egret.URLLoader(), req = new egret.URLRequest(Config.weixinSignUrl);
+            var urlloader = new egret.URLLoader(), req = new egret.URLRequest(UiltGame.interval.configMap.weixinSignUrl);
             urlloader.data = { url: window.location.href };
             urlloader.load(req);
             req.method = egret.URLRequestMethod.GET;

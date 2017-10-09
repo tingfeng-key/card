@@ -12,10 +12,10 @@
 	],
 	"game": [
 		"bin-debug/Uilt.js",
-		"bin-debug/Scene/Card.js",
 		"bin-debug/Scene/Load.js",
+		"bin-debug/Scene/Elsb.js",
 		"bin-debug/Main.js",
-		"bin-debug/Scene/CoolRun.js",
-		"bin-debug/Scene/Elsb.js"
+		"bin-debug/Scene/Card.js",
+		"bin-debug/Scene/CoolRun.js"
 	]
 }

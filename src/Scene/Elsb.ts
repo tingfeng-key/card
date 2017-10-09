@@ -3,12 +3,12 @@
  */
 module ElsbScene {
     import Tool = Uilt.Tool;
-    import Config = Uilt.Config;
     //菜单
-    import UniltGame = Uilt.Game;
+    import UniltGame = Uilt.UiltGame;
     import Pos = Uilt.Pos;
     import AnchorUtils = Uilt.AnchorUtils;
     import GameStatus = Uilt.GameStatus;
+    import LoadSkinConfig = Load.LoadSkinConfig;
 
     //背景
     export class BackgRound extends egret.Sprite {
@@ -21,44 +21,44 @@ module ElsbScene {
 
     //游戏主菜单
     export class Menu extends egret.Sprite {
-        public gameName: egret.TextField = new egret.TextField //游戏名称
-        public btnGroup: egret.Sprite //菜单按钮组
-        public startBtn: egret.Sprite //开始游戏按钮
-        public explainBtn: egret.Sprite //操作介绍按钮
-        public settingBtn: egret.Sprite //游戏设置按钮
-        public aboutBtn: egret.Sprite //关于游戏按钮
-        private btnColor: number = 0xe0690c //按钮默认颜色
-        private btnRound: number = 10 //默认圆角大小
-        private btnHeight: number = 60 //按钮默认高度
-        private btnWidth: number = 200 //按钮默认宽度
-        private fontColor: number = 0xffffff //字体颜色
+        public gameName: egret.TextField = new egret.TextField; //游戏名称
+        public btnGroup: egret.Sprite; //菜单按钮组
+        public startBtn: egret.Sprite; //开始游戏按钮
+        public explainBtn: egret.Sprite; //操作介绍按钮
+        public settingBtn: egret.Sprite; //游戏设置按钮
+        public aboutBtn: egret.Sprite; //关于游戏按钮
+        private btnColor: number = 0xe0690c; //按钮默认颜色
+        private btnRound: number = 10; //默认圆角大小
+        private btnHeight: number = 60; //按钮默认高度
+        private btnWidth: number = 200; //按钮默认宽度
+        private fontColor: number = 0xffffff; //字体颜色
         public constructor() {
             super()
-            this.width = Stage.stageW
-            this.height = Stage.stageH
-            this.gameName.width = 400
-            this.gameName.height = 80
-            this.gameName.size = 80
-            this.gameName.text = Config.gameName
-            this.gameName.fontFamily = "楷体"
-            this.gameName.textAlign = "center"
-            this.gameName.textColor = this.btnColor
-            this.gameName.x = (Stage.stageW - this.gameName.width)/2
-            this.gameName.y = 300
-            this.addChild(this.gameName)
+            this.width = Stage.stageW;
+            this.height = Stage.stageH;
+            this.gameName.width = 400;
+            this.gameName.height = 80;
+            this.gameName.size = 80;
+            this.gameName.text = UniltGame.interval.configMap.gameName;
+            this.gameName.fontFamily = "楷体";
+            this.gameName.textAlign = "center";
+            this.gameName.textColor = this.btnColor;
+            this.gameName.x = (Stage.stageW - this.gameName.width)/2;
+            this.gameName.y = 300;
+            this.addChild(this.gameName);
 
-
-            this.btnGroup = Tool.createRoundRect((Stage.stageW-this.btnWidth)/2, 500, this.btnWidth, (this.btnHeight+20)*4, 10, 0x3bb4f2, true)
+            this.btnGroup = Tool.createRoundRect((Stage.stageW-this.btnWidth)/2, 500, this.btnWidth,
+                (this.btnHeight+20)*4, 10, 0x3bb4f2, true)
             this.addChild(this.btnGroup)
 
             this.startBtn = Tool.createBtn(0, 0, this.btnWidth, this.btnHeight, this.btnRound, "开始游戏",
-                this.btnColor, this.fontColor)
-            this.explainBtn = Tool.createBtn(0, (this.btnHeight+20)*1, this.btnWidth, this.btnHeight, this.btnRound, "操作介绍",
-                this.btnColor, this.fontColor)
-            this.settingBtn = Tool.createBtn(0, (this.btnHeight+20)*2, this.btnWidth, this.btnHeight, this.btnRound, "游戏设置",
-                this.btnColor, this.fontColor)
-            this.aboutBtn = Tool.createBtn(0, (this.btnHeight+20)*3, this.btnWidth, this.btnHeight, this.btnRound, "关于游戏",
-                this.btnColor, this.fontColor)
+                this.btnColor, this.fontColor);
+            this.explainBtn = Tool.createBtn(0, (this.btnHeight+20)*1, this.btnWidth, this.btnHeight, this.btnRound,
+                "操作介绍", this.btnColor, this.fontColor);
+            this.settingBtn = Tool.createBtn(0, (this.btnHeight+20)*2, this.btnWidth, this.btnHeight, this.btnRound,
+                "游戏设置", this.btnColor, this.fontColor);
+            this.aboutBtn = Tool.createBtn(0, (this.btnHeight+20)*3, this.btnWidth, this.btnHeight, this.btnRound,
+                "关于游戏", this.btnColor, this.fontColor);
 
             this.btnGroup.addChild(this.startBtn)
             this.btnGroup.addChild(this.explainBtn)
@@ -69,9 +69,9 @@ module ElsbScene {
             this.settingBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.settingBtnFunc, this)
             this.aboutBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.aboutBtnFunc, this)
         }
-        private startBtnFunc(): void {
+        public startBtnFunc(): void {
             SceneManager.interval.removeScence(this)
-            SceneManager.interval.loadScence(Grid.interval)
+            let load: LoadSkinConfig = new LoadSkinConfig()
         }
         private explainBtnFunc(): void {
 
@@ -106,26 +106,44 @@ module ElsbScene {
          * 获取格子大小
          */
         public static get gridSize(): number {
-            return 156;
+            let value: number;
+            switch (parseInt(UniltGame.interval.configMap.setting.grade)) {
+                case 3:
+                    value = 210;
+                    break;
+                case 4:
+                    value = 156;
+                    break;
+                case 5:
+                    value = 125;
+                    break;
+                case 6:
+                    value = 105;
+                    break
+                default:
+                    value = 156;
+                    break;
+            }
+            return value;
         }
 
         //格子总列数
         public static get gridItemCols(): number {
-            return 4;
+            return UniltGame.interval.configMap.setting.grade;
         }
         //格子总行数
         public static get gridItemRows(): number {
-            return 4
+            return UniltGame.interval.configMap.setting.grade
         }
         public static get gridItemSpace(): number {
             return 6
         }
         //距离顶部
         public static get topRow(): number {
-            return 2
+            if(parseInt(UniltGame.interval.configMap.setting.grade)>5) return 3;
+            return 2;
         }
         //画格子
-        //public gridMaps: Array<gridMap> = [];
         public initGrid(): void {
             this.y = Grid.gridSize * Grid.topRow
             for(let x = 0; x < Grid.gridItemCols; x++){
@@ -169,34 +187,34 @@ module ElsbScene {
             this.BestTitleText.width = this.BestGroup.width
             this.BestTitleText.text = "Best"
             this.BestTitleText.textAlign = "center"
-            this.BestTitleText.fontFamily = Config.setting_font
+            this.BestTitleText.fontFamily = UniltGame.interval.configMap.setting.font
             this.BestGroup.addChild(this.BestTitleText)
 
             this.BestText.y = this.BestTitleText.height + 40
-            this.BestText.text = "0"
+            this.BestText.text = egret.localStorage.getItem("Elsb_Best_score") || "0"
             this.BestText.width = this.BestTitleText.width
             this.BestText.textAlign = "center"
-            this.BestText.fontFamily = Config.setting_font
+            this.BestText.fontFamily = UniltGame.interval.configMap.setting.font
             this.BestGroup.addChild(this.BestText)
 
             this.scoreTitleText.y = 20
             this.scoreTitleText.text = "Score "
             this.scoreTitleText.width = this.scoreGroup.width
             this.scoreTitleText.textAlign = "center"
-            this.scoreTitleText.fontFamily = Config.setting_font
+            this.scoreTitleText.fontFamily = UniltGame.interval.configMap.setting.font
             this.scoreGroup.addChild(this.scoreTitleText)
 
             this.scoreText.y = this.scoreTitleText.height + 40
             this.scoreText.text = "0"
             this.scoreText.width = this.scoreTitleText.width
             this.scoreText.textAlign = "center"
-            this.scoreText.fontFamily = Config.setting_font
+            this.scoreText.fontFamily = UniltGame.interval.configMap.setting.font
             this.scoreGroup.addChild(this.scoreText)
 
             let gameName: egret.TextField = new egret.TextField
             gameName.textAlign = "center"
-            gameName.text = Config.gameName
-            gameName.fontFamily = Config.setting_font
+            gameName.text = UniltGame.interval.configMap.gameName
+            gameName.fontFamily = UniltGame.interval.configMap.setting.font
             gameName.textColor = 0x000000
             gameName.width = this.width/2
             gameName.size = 60
@@ -209,7 +227,7 @@ module ElsbScene {
             desc.text = "将相同的数字融合相加，争取获得更高的分数！"
             desc.textColor = 0x000000
             desc.textAlign = "center"
-            desc.fontFamily = Config.setting_font
+            desc.fontFamily = UniltGame.interval.configMap.setting.font
             desc.width = this.width/2
             desc.size = 30
             desc.y = 120+20
@@ -220,6 +238,7 @@ module ElsbScene {
         public set score(val: number) {
             UniltGame.interval.incScore(val)
             this.scoreText.text = String(UniltGame.interval.getScore())
+            this.setBestScore();
         }
         //设置时间
         public time() {
@@ -232,6 +251,143 @@ module ElsbScene {
             this.BestText.text = "0"
             this.scoreText.text = "0"
         }
+
+        /**
+         * 设置历史最大分数
+         */
+        private setBestScore(): void {
+            let nowScore: number = UniltGame.interval.getScore();
+            if(egret.localStorage.getItem("Elsb_Best_score")){
+                let bestScore: number = parseInt(egret.localStorage.getItem("Elsb_Best_score"))
+                if(bestScore < nowScore){
+                    this.BestText.text = String(nowScore)
+                    egret.localStorage.setItem("Elsb_Best_score", String(nowScore))
+                }
+            }else{
+                this.BestText.text = String(nowScore)
+                egret.localStorage.setItem("Elsb_Best_score", String(nowScore))
+            }
+        }
+    }
+    //游戏结束面板
+    export class GameOver extends egret.Sprite {
+        public maskMap: egret.Shape = new egret.Shape() //遮罩
+        public group: egret.Sprite = new egret.Sprite() //组件
+        public restartBtn: egret.Sprite //重新开始按钮
+        public backMenuBtn: egret.Sprite //返回彩单按钮
+        public constructor(){
+            super()
+            this.width = Stage.stageW
+            this.height = Stage.stageH
+            this.init()
+        }
+
+        //初始化
+        private init(): void {
+            this.x = 0
+            this.y = 0
+            this.maskMap.graphics.beginFill( 0x000 )
+            this.maskMap.graphics.drawRect( 0,0,this.width,this.height)
+            this.maskMap.graphics.endFill()
+            this.maskMap.alpha = 0.6
+            this.addChild( this.maskMap )
+
+            //面板
+            this.group.width = 400
+            this.group.height = 400
+            this.group.alpha = 0
+            this.group.x = (Stage.stageW-this.group.width)/2
+            this.group.y = (Stage.stageH-this.group.height)/2
+            this.group.graphics.beginFill(0x3bb4f2)
+            this.group.graphics.drawRoundRect( 0, 0, this.group.width, this.group.height, 10, 10)
+            this.group.graphics.endFill()
+            this.addChild(this.group)
+
+            //重新开始按钮
+            this.restartBtn = Tool.createBtn(
+                100, this.group.height-170, 200, 60, 10,
+                "重新开始", 0xe0690c, 0xffffff)
+            this.group.addChild(this.restartBtn)
+            this.restartBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this)
+
+            this.backMenuBtn = Tool.createBtn(
+                100, this.group.height-90, 200, 60, 10,
+                "返回菜单", 0xe0690c, 0xffffff)
+            this.group.addChild(this.backMenuBtn)
+            this.backMenuBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.backMenuBtnFunc, this)
+
+            //分数
+            let scoreTitleText: egret.TextField = new egret.TextField()
+            scoreTitleText.y = 60
+            scoreTitleText.width = this.group.width/2
+            scoreTitleText.text = "分数"
+            scoreTitleText.textAlign = "center"
+            let scoreText: egret.TextField = new egret.TextField()
+            scoreText.width = this.group.width/2
+            scoreText.y = scoreTitleText.y+60
+            scoreText.textAlign = "center"
+            scoreText.text = String(UniltGame.interval.getScore())
+            this.group.addChild(scoreTitleText)
+            this.group.addChild(scoreText)
+
+            //时间
+            let timeTitleText: egret.TextField = new egret.TextField()
+            timeTitleText.x = this.group.width/2
+            timeTitleText.y = 60
+            timeTitleText.width = this.group.width/2
+            timeTitleText.text = "用时"
+            timeTitleText.textAlign = "center"
+            let timeText: egret.TextField = new egret.TextField()
+            timeText.x = this.group.width/2
+            timeText.y = timeTitleText.y+60
+            timeText.width = this.group.width/2
+            timeText.textAlign = "center"
+            timeText.text = String(UniltGame.interval.getNowTime())
+            this.group.addChild(timeTitleText)
+            this.group.addChild(timeText)
+
+            //显示、抖动效果
+            egret.Tween.get(this.group).to({
+                alpha: 1
+            }, 1000, egret.Ease.circOut).wait(600).to({
+                x: this.group.x-10
+            }, 50, egret.Ease.backInOut).to({
+                x: this.group.x
+            }, 50, egret.Ease.backInOut).to({
+                x: this.group.x+10
+            }, 50, egret.Ease.backInOut).to({
+                x: this.group.x
+            }, 50, egret.Ease.backInOut).call((group)=>{
+                egret.Tween.removeTweens(group)
+            }, this, [this.group])
+        }
+
+        //重新开始按钮点击事件
+        private restartFunc(e: egret.Event){
+            this.restartBtn.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this)
+            Stage.stage.removeChild(this)
+            //重置数据
+            UniltGame.interval.restart()
+            console.log(SceneManager.interval)
+            SceneManager.interval.removeAllScence()
+            /*SceneManager.interval.loadScence(new ElsbScene.BackgRound())
+            SceneManager.interval.loadScence(ElsbScene.Panel.interval)
+            SceneManager.interval.loadScence(ElsbScene.Grid.interval) //加载游戏格子场景
+            SceneManager.interval.loadScence(new ElsbScene.NumberData()) //加载游戏数据场景*/
+        }
+
+        //返回主彩单按钮
+        private backMenuBtnFunc(e: egret.Event){
+            this.backMenuBtn.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.backMenuBtnFunc, this)
+            Stage.stage.removeChild(this)
+            //重置数据
+            UniltGame.interval.restart()
+            Stage.stage.removeChildren()
+            SceneManager.interval.loadScence(new ElsbScene.BackgRound())
+            SceneManager.interval.loadScence(ElsbScene.Panel.interval)
+            SceneManager.interval.loadScence(ElsbScene.Grid.interval) //加载游戏格子场景
+            SceneManager.interval.loadScence(new ElsbScene.NumberData()) //加载游戏数据场景
+        }
     }
     //数字数据操作
     export class NumberData extends egret.Sprite {
@@ -243,18 +399,21 @@ module ElsbScene {
             this.y = Grid.interval.y
             this.width = Grid.interval.width
             this.height = Grid.interval.height
-            this.createOne()
-            this.createOne()
-            /*let sprite: NumberMap = new NumberMap(3, 0, 8)
+            let sprite: NumberMap = new NumberMap(0, 0, 16)
             this.data.push(sprite)
             this.addChild(sprite)
 
-            let sprite1: NumberMap = new NumberMap(1, 0, 4)
+            let sprite1: NumberMap = new NumberMap(1, 0, 256)
             this.data.push(sprite1)
             this.addChild(sprite1)
-            let sprite2: NumberMap = new NumberMap(0, 0, 4)
+            let sprite2: NumberMap = new NumberMap(0, 1, 2048)
             this.data.push(sprite2)
-            this.addChild(sprite2)*/
+            this.addChild(sprite2)
+            let sprite3: NumberMap = new NumberMap(1, 1, 10240)
+            this.data.push(sprite3)
+            this.addChild(sprite3)
+            this.createOne()
+            this.createOne()
 
             this.keyMap = new KeyBoard();
             //添加监听事件
@@ -266,19 +425,23 @@ module ElsbScene {
          * @param event
          */
         private onkeydown(event) {
-            if(this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
+            if(this.gameStatusIsRun() && this.keyMap.isContain(event.data, KeyBoard.DownArrow)){
                 this.down()
-            } else if(this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
+            } else if(this.gameStatusIsRun() && this.keyMap.isContain(event.data, KeyBoard.UpArrow)){
                 this.up()
-            } else if(this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
+            } else if(this.gameStatusIsRun() && this.keyMap.isContain(event.data, KeyBoard.RightArrow)){
                 this.right()
-            } else if(this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
+            } else if(this.gameStatusIsRun() && this.keyMap.isContain(event.data, KeyBoard.keyArrow)){
                 this.left()
             }
+        }
 
-            if(!this.gameOver()){
-                this.createOne()
-            }
+        /**
+         * 检测游戏状态是否为运行时状态
+         * @returns {boolean}
+         */
+        private gameStatusIsRun(): boolean {
+            return UniltGame.interval.getGameStatus() === GameStatus.Start
         }
 
         /**
@@ -291,7 +454,7 @@ module ElsbScene {
             for(let i = (data.length-1); i >= 0; i--){
                 let length: number = this.moveLength(data[i], data, KeyBoard.DownArrow),
                     newPosY: number = data[i].posY+length,
-                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY+1, data[i])
+                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY+1)
                 if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
                     data[i].posY += length+1
                     removeArr.push(nextGrid)
@@ -315,13 +478,12 @@ module ElsbScene {
             for(let i = (data.length-1); i >= 0; i--){
                 let length: number = this.moveLength(data[i], data, KeyBoard.UpArrow),
                     newPosY: number = data[i].posY-length,
-                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY-1, data[i])
+                    nextGrid: NumberMap = this.getNumberMap(data[i].posX, newPosY-1)
                 if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
                     data[i].posY -= length+1
                     removeArr.push(nextGrid)
                     data[i].isInc = true
                     nextGrid.isRemove = true
-                    console.log("me", data[i].posY,data[i].hashCode, nextGrid.hashCode)
                 }else{
                     data[i].posY -= length
                 }
@@ -340,7 +502,7 @@ module ElsbScene {
             for (let i = (data.length-1); i >= 0; i--){
                 let length: number = this.moveLength(data[i], data, KeyBoard.keyArrow),
                     newPosX: number = data[i].posX-length,
-                    nextGrid: NumberMap = this.getNumberMap(newPosX-1, data[i].posY, data[i])
+                    nextGrid: NumberMap = this.getNumberMap(newPosX-1, data[i].posY)
                 if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
                     data[i].posX -= length+1
                     removeArr.push(nextGrid)
@@ -364,7 +526,7 @@ module ElsbScene {
             for (let i = (data.length-1); i >= 0; i--){
                 let length: number = this.moveLength(data[i], data, KeyBoard.RightArrow),
                     newPosX: number = data[i].posX+length,
-                    nextGrid: NumberMap = this.getNumberMap(newPosX+1, data[i].posY, data[i])
+                    nextGrid: NumberMap = this.getNumberMap(newPosX+1, data[i].posY)
                 if(nextGrid !== null && nextGrid.value === data[i].value && !nextGrid.isRemove && !nextGrid.isInc) {
                     data[i].posX += length+1
                     removeArr.push(nextGrid)
@@ -384,7 +546,12 @@ module ElsbScene {
          * @param removeArr 消除的方块组
          */
         private moveAndRemove(moveArr: Array<NumberMap>, removeArr: Array<NumberMap>): void {
+            let createOneMap: boolean = false;
             for(let i = 0; i < moveArr.length; i++){
+                if(
+                    moveArr[i].x !== NumberMap.pos(moveArr[i].posX) ||
+                    moveArr[i].y !== NumberMap.pos(moveArr[i].posY)
+                ) createOneMap = true;
                 let tw: egret.Tween = egret.Tween.get(moveArr[i])
                 if(moveArr[i].isInc){
                     tw.to({
@@ -400,7 +567,6 @@ module ElsbScene {
                         scaleX: 1,
                         scaleY: 1
                     }, 400, egret.Ease.circInOut)
-
                 }else{
                     tw.to({
                         x: NumberMap.pos(moveArr[i].posX),
@@ -419,8 +585,19 @@ module ElsbScene {
                 }, this, [removeArr[i]])
                 this.removeMap(removeArr[i])
             }
+            if(!this.gameOver() && createOneMap){
+                this.createOne()
+                this.gameOver()
+            }
         }
 
+        /**
+         * 是否可以移动
+         * @param data 数据组合
+         * @param PosX 位置X
+         * @param PosY 位置Y
+         * @returns {number}
+         */
         private isCanIncY(data: Array<NumberMap>, PosX: number, PosY: number) {
             for(let i = 0; i < data.length; i++){
                 if(PosX === data[i].posX && PosY > data[i].posY){
@@ -435,8 +612,30 @@ module ElsbScene {
          */
         private gameOver(): boolean {
             if(this.getEmptyGrids().length > 0) return false;
+            for(let i = 0; i < this.data.length; i++){
+                if(this.isCanMerge(this.data[i])) return false;
+            }
+            SceneManager.interval.loadScence(new GameOver)
             UniltGame.interval.setGameStatus(GameStatus.Died)
             return true;
+        }
+
+        /**
+         * 检测是否可以合并
+         * @param map
+         * @returns {boolean}
+         */
+        private isCanMerge(map: NumberMap): boolean {
+            let maps: Array<NumberMap> = [
+                this.getNumberMap(map.posX, map.posY-1),
+                this.getNumberMap(map.posX, map.posY+1),
+                this.getNumberMap(map.posX-1, map.posY),
+                this.getNumberMap(map.posX+1, map.posY)
+            ]
+            for(let i = 0; i < maps.length; i++){
+                if(maps[i]!==null && maps[i].value === map.value) return true;
+            }
+            return false;
         }
 
         /**
@@ -485,7 +684,7 @@ module ElsbScene {
          * @param posY
          * @returns {any}
          */
-        private getNumberMap(posX: number, posY: number, target: NumberMap): NumberMap {
+        private getNumberMap(posX: number, posY: number): NumberMap {
             for(let i = 0; i < this.data.length; i++){
                 if(this.data[i].posX === posX && this.data[i].posY === posY){
                     return this.data[i]
@@ -613,7 +812,7 @@ module ElsbScene {
             tw.to({
                 scaleX: 1,
                 scaleY: 1
-            }, 300)
+            }, 400)
             return sprite
         }
 
@@ -709,7 +908,7 @@ module ElsbScene {
             this.numberMap.width = this.width
             this.numberMap.textAlign = "center"
             this.numberMap.size = Skin.numberSize(value)
-            this.numberMap.fontFamily = Config.setting_font
+            this.numberMap.fontFamily = UniltGame.interval.configMap.setting.font
             this.numberMap.y = (this.backgroundMap.height-this.numberMap.size)*0.5
         }
 
@@ -732,7 +931,7 @@ module ElsbScene {
          * @returns {number}
          */
         public static backgroundColor(value: number): number {
-            switch (Config.setting_skin){
+            switch (UniltGame.interval.configMap.setting.skin){
                 case 1:
                     return this.bgrc1(value)
                 case 2:
@@ -825,7 +1024,7 @@ module ElsbScene {
          * @returns {number}
          */
         public static numberColor(value: number): number {
-            switch (Config.setting_skin){
+            switch (UniltGame.interval.configMap.setting.skin){
                 case 1:
                     return this.color1(value)
                 case 2:
@@ -889,36 +1088,36 @@ module ElsbScene {
          * @returns {number}
          */
         public static numberSize(value: number): number {
-            switch (Config.setting_grade){
+            switch (UniltGame.interval.configMap.setting.grade){
                 case 3:
-                    return this.font1(value)
-                case 4:
-                    return this.font2(value)
-                case 5:
                     return this.font3(value)
-                case 6:
+                case 4:
                     return this.font4(value)
+                case 5:
+                    return this.font5(value)
+                case 6:
+                    return this.font6(value)
                 default:
-                    return this.font1(value)
+                    return this.font3(value)
             }
         }
         //等级数字大小
-        private static font1(value: number): number{
+        private static font3(value: number): number{
             if( value > 0 && value <= 8 ){
-                return 0;
+                return 130;
             }else if( value > 8 && value <= 64 ){
-                return 0;
+                return 110;
             }else if( value > 64 && value <= 512 ){
-                return 0;
+                return 90;
             }else if( value > 512 && value <= 8192 ){
-                return 0;
+                return 60;
             }else if( value >= 8192 && value <= 65536 ){
-                return 0;
+                return 50;
             }else if( value > 65536 ){
-                return 0;
+                return 50;
             }
         }
-        private static font2(value: number): number{
+        private static font4(value: number): number{
             if( value > 0 && value <= 8 ){
                 return 90;
             }else if( value > 8 && value <= 64 ){
@@ -933,34 +1132,34 @@ module ElsbScene {
                 return 25;
             }
         }
-        private static font3(value: number): number{
+        private static font5(value: number): number{
             if( value > 0 && value <= 8 ){
-                return 0;
+                return 90;
             }else if( value > 8 && value <= 64 ){
-                return 0;
+                return 70;
             }else if( value > 64 && value <= 512 ){
-                return 0;
+                return 50;
             }else if( value > 512 && value <= 8192 ){
-                return 0;
+                return 40;
             }else if( value >= 8192 && value <= 65536 ){
-                return 0;
+                return 30;
             }else if( value > 65536 ){
-                return 0;
+                return 30;
             }
         }
-        private static font4(value: number): number{
+        private static font6(value: number): number{
             if( value > 0 && value <= 8 ){
-                return 0;
+                return 80;
             }else if( value > 8 && value <= 64 ){
-                return 0;
+                return 60;
             }else if( value > 64 && value <= 512 ){
-                return 0;
+                return 40;
             }else if( value > 512 && value <= 8192 ){
-                return 0;
+                return 30;
             }else if( value >= 8192 && value <= 65536 ){
-                return 0;
+                return 20;
             }else if( value > 65536 ){
-                return 0;
+                return 20;
             }
         }
     }
