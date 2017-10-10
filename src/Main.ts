@@ -2,6 +2,8 @@ import SceneManager = Uilt.SceneManager;
 import Menu = SceneCard.Menu;
 import Stage = Uilt.Stage;
 import Card = SceneCard.Card;
+import Road = SceneCard.Road;
+import LoadSkinConfig = Load.LoadSkinConfig;
 class Main extends egret.DisplayObjectContainer {
 
     public constructor() {
@@ -15,6 +17,8 @@ class Main extends egret.DisplayObjectContainer {
         this.stage.addChild(sceneManager);
         let menu: Menu = new Menu
         let card: Card = new Card
-        sceneManager.loadScence(card)
+        let road: Road = new Road
+        let load: LoadSkinConfig = new LoadSkinConfig("default")
+        sceneManager.loadScence(load)
     }
 }

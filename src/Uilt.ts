@@ -2,11 +2,21 @@ module Uilt {
 	//配置类
 	export class Config {
 		public static debug: boolean = true; //调试模式
-		public static panelLineWidth = 2; //线条宽度
-		public static panelLineColor = 0x00ff00; //线条颜色
-		public static gameName: string = "极速冒险"; //游戏名称
+		public static gameName: string = "2048"; //游戏名称
 		public static StateW: number = 640; //舞台宽度
 		public static StateH: number = 1136; //舞台高度
+		public static panelLineWidth: number = 2; //线条宽度
+		public static panelLineColor: number = 0x00ff00; //线条颜色
+
+		public static LoadGameConfigUrl: string = '/diyGames/getConfig/' //加载游戏配置URL
+
+		public static weixinSignUrl: string = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
+
+		//设置
+		public static setting_skin: number = 1; //设置皮肤
+		public static setting_grade: number = 4;//设置难度
+		public static setting_font: string = "微软雅黑"; //设置字体
+		public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
 	}
 	//游戏基本属性类
 	export class Game {
@@ -129,6 +139,16 @@ module Uilt {
 	}
 	//工具 类
 	export class Tool {
+
+		/**
+		 * 获取当前链接参数
+		 * @param name 参数名
+		 */
+		public static getQueryString(name) {
+			var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+			var r = window.location.search.substr(1).match(reg);
+			if (r != null) return decodeURI(r[2]); return null;
+		}
 		/**
 		 * 根据name关键字创建一个Bitmap对象。name属性请参考resources/resource.json配置文件的内容。
 		 * Create a Bitmap object according to name keyword.As for the property of name please refer to the configuration file of resources/resource.json.
@@ -151,13 +171,15 @@ module Uilt {
 		 * @returns {egret.Shape}
 		 */
 		public static createLineTo(
-			x:number = 0, y: number = 0, w:number, h: number,
+			x:number = 0, y: number = 0, x2:number, y2: number,
 			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
+			shp.x = x
+			shp.y = y
 			shp.graphics.lineStyle( lineW, lineC );
-			shp.graphics.moveTo( x, y );
-			shp.graphics.lineTo( w, h );
+			shp.graphics.moveTo( 0, 0 );
+			shp.graphics.lineTo( x2, y2 );
 			shp.graphics.endFill();
 			return shp;
 		}
@@ -254,6 +276,29 @@ module Uilt {
 			circle.graphics.endFill()
 			return circle
 		}
+
+		/**
+		 * 绘制梯形
+		 * @param x 下底中点X值
+		 * @param y 下底中点Y值
+		 * @param upWidth 上底1/2宽度
+		 * @param downWidth 下底1/2宽度
+		 * @param height 高度
+		 * @param color 填充颜色
+		 * @returns {egret.Sprite}
+		 */
+		public static createTrapezoid(x: number, y: number, upWidth: number, downWidth: number, height: number, color: number){
+			let trapezoid: egret.Sprite = new egret.Sprite
+			trapezoid.graphics.lineStyle(1, color)
+			trapezoid.graphics.beginFill(color)
+			trapezoid.graphics.moveTo(x-upWidth/2, y-height)
+			trapezoid.graphics.lineTo(x+upWidth/2, y-height)
+			trapezoid.graphics.lineTo(x+downWidth/2, y)
+			trapezoid.graphics.lineTo(x-downWidth/2, y)
+			trapezoid.graphics.lineTo(x-upWidth/2, y-height)
+			return trapezoid
+		}
+
 		public static createTextField(): egret.TextField {
 			let text: egret.TextField = new egret.TextField
 			return text
@@ -400,6 +445,242 @@ module Uilt {
 		}
 	}
 
+	//微信分享接口
+	interface SignPackage {
+		debug: boolean; //调试模式
+		appId:string; //分享的微信平台AppID
+		nonceStr:string; 随机数
+		timestamp:number; 时间戳
+		signature:string; 签名
+		//url:string; //地址
+	}
+	//分享的内容
+	interface ShareContent {
+		title: string; //标题
+		desc: string; //描述
+		link: string; //游戏地址
+		imgLink: string; //游戏图片、LOGO
+	}
+
+	//微信分享
+	export class WeixinShare {
+		private signPackage:SignPackage; //签名包
+		public shareCont: ShareContent = <ShareContent>{};//分享内容对象
+		private static _interval: WeixinShare;
+		public static get interval(): WeixinShare {
+			return this._interval || (this._interval = new WeixinShare)
+		}
+		/**
+		 * 初始化
+		 */
+		public init(): void {
+			let urlloader = new egret.URLLoader(),
+				req = new egret.URLRequest(Config.weixinSignUrl);
+			urlloader.data = {url: window.location.href}
+			urlloader.load(req);
+			req.method = egret.URLRequestMethod.GET;
+			urlloader.addEventListener(egret.Event.COMPLETE, (e)=> {
+				this.signPackage = <SignPackage>JSON.parse(e.target.data);
+				this.getWeiXinConfig();
+			}, this);
+		}
+
+		/**
+		 * 配置参数
+		 */
+		private getWeiXinConfig(): void {
+			let bodyConfig = new BodyConfig();
+			bodyConfig.debug = this.signPackage.debug;
+			bodyConfig.appId = this.signPackage.appId;
+			bodyConfig.timestamp = this.signPackage.timestamp;
+			bodyConfig.nonceStr = this.signPackage.nonceStr;
+			bodyConfig.signature = this.signPackage.signature;
+			bodyConfig.jsApiList = [// 必填，需要使用的JS接口列表
+				// 所有要调用的 API 都要加到这个列表中
+				'checkJsApi',//判断当前客户端是否支持指定JS接口
+				'chooseImage',//拍照或从手机相册中选图接口
+				'onMenuShareTimeline', //分享到朋友圈
+				'onMenuShareAppMessage', //分享给朋友
+				'showMenuItems',
+				'hideMenuItems',
+			];
+			wx.config(bodyConfig);
+			wx.ready(function() {
+				//需要隐藏的菜单选项
+				wx.hideMenuItems({
+					menuList: [
+						"menuItem:share:timeline",
+						"menuItem:editTag",
+						"menuItem:readMode"
+					]
+				});
+				//检测的jsApi接口
+				wx.checkJsApi({
+					jsApiList: [
+						'getNetworkType',
+						'previewImage',
+						'onMenuShareTimeline',
+						'onMenuShareAppMessage',
+						'onMenuShareQQ',
+						'onMenuShareWeibo'
+					],
+					success: function (res) {
+						//alert(JSON.stringify(res));
+					}
+				});
+			});
+		}
+
+		/**
+		 * 分享给朋友
+		 */
+		private onShareAPPMessage() {
+			let shareAppMessage = new BodyMenuShareAppMessage();
+			shareAppMessage.title = this.shareCont.title;
+			shareAppMessage.desc = this.shareCont.desc;
+			shareAppMessage.link = this.shareCont.link;
+			shareAppMessage.imgUrl = this.shareCont.imgLink;
+			shareAppMessage.trigger = function (res) {
+				console.log('用户点击发送给朋友');
+			}
+			shareAppMessage.success = function (res) {
+				console.log('已分享');
+			};
+			shareAppMessage.fail = function (res) {
+				console.log('已取消');
+			};
+			shareAppMessage.cancel = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到QQ
+		 */
+		private onShareQQ() {
+			let shareqq = new BodyMenuShareQQ();
+			shareqq.title = this.shareCont.title;
+			shareqq.desc = this.shareCont.desc;
+			shareqq.link = this.shareCont.link;
+			shareqq.imgUrl = this.shareCont.imgLink;
+			shareqq.complete = function (res) {
+				console.log(JSON.stringify(res));
+			};
+			shareqq.trigger = function (res) {
+				console.log('用户点击分享到QQ');
+			};
+			shareqq.success = function (res) {
+				console.log('已分享');
+			};
+			shareqq.cancel = function (res) {
+				console.log('已取消');
+			};
+			shareqq.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到微博
+		 * @param e
+		 */
+		private onshareWeibo(e:egret.TouchEvent) {
+			let shareweibo = new BodyMenuShareWeibo();
+			shareweibo.title = this.shareCont.title;
+			shareweibo.desc = this.shareCont.desc;
+			shareweibo.link = this.shareCont.link;
+			shareweibo.imgUrl = this.shareCont.imgLink;
+			shareweibo.complete = function (res) {
+				console.log(JSON.stringify(res));
+			};
+			shareweibo.trigger = function (res) {
+				console.log('用户点击分享到微博');
+			};
+			shareweibo.cancel = function (res) {
+				console.log('已取消');
+			};
+			shareweibo.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+
+		/**
+		 * 分享到朋友圈
+		 * @param e
+		 */
+		private onTimeline(e:egret.TouchEvent): void {
+			let sharet = new BodyMenuShareTimeline();
+			sharet.title = this.shareCont.title;
+			sharet.link = this.shareCont.link;
+			sharet.imgUrl = this.shareCont.imgLink;
+			sharet.trigger = function (res) {
+				// 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，
+				// 因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+				console.log('用户点击分享到朋友圈');
+			};
+			sharet.success = function (res) {
+				console.log('已分享');
+			};
+			sharet.cancel = function (res) {
+				console.log('已取消');
+			};
+			sharet.fail = function (res) {
+				console.log(JSON.stringify(res));
+			};
+		}
+	}
+
+	interface keyValue {
+		key: string,
+		value: string
+	}
+
+	//网络请求
+	export class Http {
+		private request: egret.HttpRequest = new egret.HttpRequest //实例化请求
+		/**
+		 * 构造传参
+		 * @param url 请求地址
+		 * @param method 请求方式
+		 * @param responseType 请求类型
+		 * @param headers 请求头信息
+		 */
+		public constructor(url: string, method: string, responseType: string, headers: Array<keyValue> = []) {
+			this.request.responseType = responseType;
+			this.request.open(url, method);
+			if(headers.length > 0){
+				for(let i = 0; i < headers.length; i++){
+					this.request.setRequestHeader(headers[i].key, headers[i].value);
+				}
+			}
+		}
+
+		/**
+		 * 返回请求实例
+		 * @returns {egret.HttpRequest}
+		 */
+		public req() {
+			return this.request
+		}
+
+		/**
+		 * 设置请求头
+		 * @param key
+		 * @param value
+		 */
+		public setHeader(key: string, value: string) {
+			this.request.setRequestHeader(key, value);
+		}
+
+		/**
+		 * 发送请求
+		 * @param data
+		 */
+		public sendRequest(data: any = '') {
+			this.request.send(data)
+		}
+	}
+
 	//游戏状态
 	export enum GameStatus{
 		Load = 0,//加载资源
@@ -410,10 +691,110 @@ module Uilt {
 		OneFinash = 5, //方块下落完成
 	}
 
-	//坐标
-	export enum Coordinate {
-		x = 1,
-		y = 2,
-		both = 3
+	/**
+	 *
+	 * 设备工具类
+	 *
+	 */
+	export class DeviceUtils {
+		/**
+		 * 当前是否Html5版本
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsHtml5(): boolean {
+			return egret.Capabilities.runtimeType == egret.RuntimeType.WEB;
+		}
+
+		/**
+		 * 当前是否是Native版本
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsNative(): boolean {
+			return egret.Capabilities.runtimeType == egret.RuntimeType.NATIVE;
+		}
+
+		/**
+		 * 是否是在手机上
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsMobile(): boolean {
+			return egret.Capabilities.isMobile;
+		}
+
+		/**
+		 * 是否是在PC上
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsPC(): boolean {
+			return !egret.Capabilities.isMobile;
+		}
+
+		/**
+		 * 是否是QQ浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsQQBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf('MQQBrowser') != -1;
+		}
+
+		/**
+		 * 是否是IE浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsIEBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("MSIE") != -1;
+		}
+
+		/**
+		 * 是否是Firefox浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsFirefoxBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Firefox") != -1;
+		}
+
+		/**
+		 * 是否是Chrome浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsChromeBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Chrome") != -1;
+		}
+
+		/**
+		 * 是否是Safari浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsSafariBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Safari") != -1;
+		}
+
+		/**
+		 * 是否是Opera浏览器
+		 * @returns {boolean}
+		 * @constructor
+		 */
+		public static get IsOperaBrowser(): boolean {
+			return this.IsHtml5 && navigator.userAgent.indexOf("Opera") != -1;
+		}
+	}
+
+	//格子坐标
+	export class Pos {
+		public posX: number; //坐标X值
+		public posY: number; // 坐标Y值
+		public constructor(x: number, y: number){
+			this.posX = x;
+			this.posY = y;
+		}
 	}
 }

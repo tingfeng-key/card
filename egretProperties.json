@@ -23,6 +23,10 @@
       "name": "res"
     },
     {
+      "name": "weixinapi",
+      "path": "./weixinapi"
+    },
+    {
       "name": "promise",
       "path": "./promise"
     }

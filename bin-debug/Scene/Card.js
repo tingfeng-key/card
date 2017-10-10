@@ -19,19 +19,42 @@ var SceneCard;
     var Stage = Uilt.Stage;
     var Tool = Uilt.Tool;
     var Config = Uilt.Config;
+    var Road = (function (_super) {
+        __extends(Road, _super);
+        function Road() {
+            var _this = _super.call(this) || this;
+            var road1 = new egret.Sprite;
+            road1.x = 100;
+            road1.y = 640;
+            var x = 200, y = 200;
+            road1.graphics.beginFill(0xff0000);
+            road1.graphics.moveTo(x, y);
+            road1.graphics.lineTo(x + 20, y);
+            road1.graphics.curveTo(x + 100, y + 100, x - 20, y + 300);
+            road1.graphics.lineTo(x - 120, y + 300);
+            road1.graphics.curveTo(x + 100, y + 100, x, y);
+            road1.graphics.endFill();
+            _this.addChild(road1);
+            return _this;
+        }
+        return Road;
+    }(egret.Sprite));
+    SceneCard.Road = Road;
+    __reflect(Road.prototype, "SceneCard.Road");
+    //车子
     var Card = (function (_super) {
         __extends(Card, _super);
         function Card() {
             var _this = _super.call(this) || this;
             _this.speed = 0; //速度
-            _this.wheelWidth = 30;
-            _this.wheelHeight = 45;
-            _this.wheelColor = 0x111111;
-            _this.wheelRound = 10;
-            _this.bodyWidth = 200;
-            _this.bodyLength = 25;
-            _this.bodyColor = 0xDEE0E2;
-            _this.body = new egret.Sprite();
+            _this.wheelWidth = 30; //轮胎宽度
+            _this.wheelHeight = 60; //轮胎高度
+            _this.wheelColor = 0x222222; //轮胎颜色
+            _this.wheelRound = 10; //轮胎圆角像素
+            _this.bodyWidth = 200; //车身宽度
+            _this.bodyLength = 10; //车身高度
+            _this.bodyColor = 0xDEE0E2; //车身颜色
+            _this.body = new egret.Sprite(); //车身容器
             _this.init();
             return _this;
         }
@@ -47,41 +70,56 @@ var SceneCard;
             this.y = 600;
             this.width = this.bodyWidth + 50;
             this.height = this.bodyLength + 50;
-            this.frontLeftWheel = Tool.createRoundRect(0, 0, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
-            this.frontRightWheel = Tool.createRoundRect(this.bodyWidth - 10, 0, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
+            this.wheels();
+            this.bodys();
+            this.tail();
+        };
+        /**
+         * 轮胎
+         */
+        Card.prototype.wheels = function () {
+            this.frontLeftWheel = Tool.createRoundRect(30, 0, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
+            this.frontRightWheel = Tool.createRoundRect(this.bodyWidth - 40, 0, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
             this.backLeftWheel = Tool.createRoundRect(0, this.bodyLength, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
-            this.backRightWheel = Tool.createRoundRect(this.bodyWidth, this.bodyLength, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
+            this.backRightWheel = Tool.createRoundRect(this.bodyWidth - 10, this.bodyLength, this.wheelWidth, this.wheelHeight, this.wheelRound, this.wheelColor);
             this.addChild(this.frontLeftWheel);
             this.addChild(this.frontRightWheel);
             this.addChild(this.backLeftWheel);
             this.addChild(this.backRightWheel);
+        };
+        /**
+         * 车身
+         */
+        Card.prototype.bodys = function () {
             this.addChild(this.body);
-            var body1 = new egret.Shape;
-            body1.graphics.lineStyle(1, this.bodyColor);
-            body1.graphics.beginFill(this.bodyColor);
-            body1.graphics.moveTo(20, -20);
-            body1.graphics.lineTo(this.bodyWidth, -20);
-            body1.graphics.lineTo(this.bodyWidth + 20, this.bodyLength);
-            body1.graphics.lineTo(0, this.bodyLength);
-            body1.graphics.lineTo(0, this.bodyLength);
-            body1.graphics.lineTo(20, -20);
+            //车板
+            var body1 = Tool.createTrapezoid(this.bodyWidth / 2 + 10, this.bodyLength, this.bodyWidth - 140, this.bodyWidth, this.bodyLength + 20, this.bodyColor);
             this.body.addChild(body1);
-            var body2 = Tool.createRoundRect(0, this.bodyLength, this.bodyWidth + 20, 35, 10, this.bodyColor);
+            //后面遮挡板
+            var body2 = Tool.createRoundRect(-9, this.bodyLength, this.bodyWidth + 38, 45, 25, this.bodyColor);
             this.body.addChild(body2);
-            var point1 = Tool.createCircle(0 + 20, this.bodyLength + 20, 10, 0xFF9166);
-            var point2 = Tool.createCircle(this.bodyWidth, this.bodyLength + 20, 10, 0xFF9166);
+            //四个后灯
+            var point1 = Tool.createCircle(0 + 20, this.bodyLength + 20, 10, 0xFF9166), point2 = Tool.createCircle(0 + 50, this.bodyLength + 20, 10, 0xFF9166), point3 = Tool.createCircle(this.bodyWidth - 30, this.bodyLength + 20, 10, 0xFF9166), point4 = Tool.createCircle(this.bodyWidth, this.bodyLength + 20, 10, 0xFF9166);
             this.body.addChild(point1);
             this.body.addChild(point2);
-            var tail1 = Tool.createRoundRect((this.bodyWidth / 2 - 40), this.bodyLength - 15, 80, 15, 20, 0x474747);
-            this.body.addChild(tail1);
-            var tail2 = Tool.createRoundRect(0, this.bodyLength - 30, this.bodyWidth + 20, 15, 20, 0x474747);
-            this.body.addChild(tail2);
+            this.body.addChild(point3);
+            this.body.addChild(point4);
+            //玻璃
+            var body3 = Tool.createTrapezoid(this.bodyWidth / 2 + 10, this.bodyLength - 5, this.bodyWidth - 120, this.bodyWidth - 20, this.bodyLength + 10, 0xffffff);
+            this.body.addChild(body3);
+            var body4 = Tool.createRoundRect((this.bodyWidth - 20) / 2, this.bodyLength + 10, 40, 20, 10, 0xffffff);
+            this.body.addChild(body4);
         };
-        Card.prototype.createWheel = function () {
-            var wheel = new egret.Sprite();
-            wheel.graphics.beginFill(this.wheelColor);
-            wheel.graphics.endFill();
-            return wheel;
+        /**
+         * 尾翼
+         */
+        Card.prototype.tail = function () {
+            var tail1 = Tool.createRoundRect(20, this.bodyLength - 15, 5, 20, 5, 0x474747);
+            this.body.addChild(tail1);
+            var tail2 = Tool.createRoundRect(this.bodyWidth - 20, this.bodyLength - 15, 5, 20, 5, 0x474747);
+            this.body.addChild(tail2);
+            var tail3 = Tool.createRoundRect(0, this.bodyLength - 15, this.bodyWidth + 20, 3, 20, 0x474747);
+            this.body.addChild(tail3);
         };
         return Card;
     }(egret.Sprite));

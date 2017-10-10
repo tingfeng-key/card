@@ -15,6 +15,8 @@ var SceneManager = Uilt.SceneManager;
 var Menu = SceneCard.Menu;
 var Stage = Uilt.Stage;
 var Card = SceneCard.Card;
+var Road = SceneCard.Road;
+var LoadSkinConfig = Load.LoadSkinConfig;
 var Main = (function (_super) {
     __extends(Main, _super);
     function Main() {
@@ -28,7 +30,9 @@ var Main = (function (_super) {
         this.stage.addChild(sceneManager);
         var menu = new Menu;
         var card = new Card;
-        sceneManager.loadScence(card);
+        var road = new Road;
+        var load = new LoadSkinConfig("default");
+        sceneManager.loadScence(load);
     };
     return Main;
 }(egret.DisplayObjectContainer));
