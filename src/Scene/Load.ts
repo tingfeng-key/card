@@ -1,10 +1,15 @@
 /**
  * Created by feizhugame on 2017/9/27.
  */
+
 module Load {
+    import Player = CoolRunScene.Player;
+
     export class InitGame {
         public static start(): void {
-            UiltGame.interval.setGameStatus(Uilt.GameStatus.Start);
+            SceneManager.interval.loadScence(CoolRunScene.Round.interval);
+            SceneManager.interval.loadScence(new Player());
+            /*UiltGame.interval.setGameStatus(Uilt.GameStatus.Start);
             SceneManager.interval.loadScence(new ElsbScene.BackgRound());//加载背景场景
             SceneManager.interval.loadScence(ElsbScene.Grid.interval);//加载游戏格子场景
             SceneManager.interval.loadScence(ElsbScene.NumberData.interval);//加载游戏数据场景
@@ -23,7 +28,7 @@ module Load {
                 UiltGame.interval.incScore(parseInt(storageNowScore));
                 console.log(UiltGame.interval.getScore())
             }
-            SceneManager.interval.loadScence(ElsbScene.Panel.interval);//加载分数面板场景
+            SceneManager.interval.loadScence(ElsbScene.Panel.interval);//加载分数面板场景*/
         }
     }
 }

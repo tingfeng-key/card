@@ -1,5 +1,84 @@
 module Uilt {
-	//日志类
+	export class Animation extends egret.Sprite {
+		private texttureName: string; //纹理名称
+		private totalFrameNumber: number; //总数
+		private frameRate: number; //频率
+		private nowFrameIndex: number; //当前帧索引
+		private startFrameIndex: number; //开始帧索引
+		public texttureMap: egret.Bitmap; //纹理对象
+		public loopTotalNumber: number = 0; //循环次数
+		private nowLoopNumber: number = 0; //当前循环次数
+		private timerMap: egret.Timer; //定时器对象
+		public constructor(textureName: string, totalFrameNumber: number, frameRate: number, startFrameIndex: number = 1) {
+			super();
+			this.texttureName = textureName;
+			this.totalFrameNumber = totalFrameNumber;
+			this.frameRate = frameRate;
+			this.texttureMap = new egret.Bitmap;
+            this.startFrameIndex = this.nowFrameIndex = startFrameIndex;
+			this.settexture(this.nowFrameIndex);
+			this.addChild(this.texttureMap);
+
+			this.timerMap = new egret.Timer(this.frameRate);
+			this.texttureMap.x = this.texttureMap.y = 0;
+			this.timerMap.addEventListener(egret.TimerEvent.TIMER, this.timerFunc, this);
+		}
+
+		public setPos(x: number, y: number, width: number, height: number){
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+
+        /**
+		 * 定时器回调函数
+         */
+		private timerFunc(): void {
+			if(this.loopTotalNumber !== 0 && this.nowLoopNumber === this.loopTotalNumber){
+				this.stop();
+				return ;
+			}
+			let nextIndex: number = this.nowFrameIndex+1;
+			if(nextIndex > this.totalFrameNumber){
+				nextIndex = this.startFrameIndex;
+				this.nowLoopNumber++;
+			}
+			this.nowFrameIndex = nextIndex;
+			this.settexture(this.nowFrameIndex);
+		}
+
+        /**
+		 * 设置动画帧纹理
+         * @param {number} frameIndex
+         */
+		private settexture(frameIndex: number): void {
+            this.texttureMap.texture = RES.getRes(this.texttureName+frameIndex);//+"_png"
+		}
+
+        /**
+		 * 设置纹理
+         * @param {string} texttureName
+         */
+		public setNextexture(texttureName: string): void {
+            this.texttureMap.texture = RES.getRes(texttureName);
+		}
+
+        /**
+		 * 播放
+         */
+		public play(): void {
+			this.timerMap.start();
+		}
+
+        /**
+		 * 暂停
+         */
+		public stop(): void {
+			this.timerMap.stop();
+		}
+	}
+    //日志类
 	export class Log {
 		public static info(msg: string): void {
 			console.info(msg)
@@ -417,8 +496,8 @@ module Uilt {
 	export class Stage {
 		public static _interval:Stage;
 		public static get interval(): Stage{
-			this.stage.width = UiltGame.interval.configMap.StateW
-			this.stage.height = UiltGame.interval.configMap.StateH
+			this.stage.width = UiltGame.interval.configMap.StateWithd;
+			this.stage.height = UiltGame.interval.configMap.StateHeight;
 			return (this._interval || (this._interval = new Stage));
 		}
 		/**

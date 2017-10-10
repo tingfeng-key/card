@@ -134,10 +134,10 @@ var KeyBoard = (function (_super) {
         };
         document.onkeyup = function (event) {
             var e = event || window.event || arguments.callee.caller.arguments[0];
-            self.handlekeyup(e);
             if (self.inputs.length > 0) {
                 self.dispatchEventWith(KeyBoard.onkeyup, true, self.inputs, true);
             }
+            self.handlekeyup(e);
         };
         document.onmousedown = function (event) {
             self.inputs = [];

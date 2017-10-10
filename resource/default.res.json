@@ -3,6 +3,10 @@
 		{
 			"keys": "gameConfig_json",
 			"name": "config"
+		},
+		{
+			"keys": "CoolRun_json",
+			"name": "CoolRun"
 		}
 	],
 	"resources": [
@@ -10,6 +14,12 @@
 			"url": "gameConfig.json",
 			"type": "json",
 			"name": "gameConfig_json"
+		},
+		{
+			"url": "CoolRun/CoolRun.json",
+			"type": "sheet",
+			"name": "CoolRun_json",
+			"subkeys": "clound,spearrun,spearrun1,spearrun2,spearrun3"
 		}
 	]
 }

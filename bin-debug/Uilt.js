@@ -13,6 +13,77 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Uilt;
 (function (Uilt) {
+    var Animation = (function (_super) {
+        __extends(Animation, _super);
+        function Animation(textureName, totalFrameNumber, frameRate, startFrameIndex) {
+            if (startFrameIndex === void 0) { startFrameIndex = 1; }
+            var _this = _super.call(this) || this;
+            _this.loopTotalNumber = 0; //循环次数
+            _this.nowLoopNumber = 0; //当前循环次数
+            _this.texttureName = textureName;
+            _this.totalFrameNumber = totalFrameNumber;
+            _this.frameRate = frameRate;
+            _this.texttureMap = new egret.Bitmap;
+            _this.startFrameIndex = _this.nowFrameIndex = startFrameIndex;
+            _this.settexture(_this.nowFrameIndex);
+            _this.addChild(_this.texttureMap);
+            _this.timerMap = new egret.Timer(_this.frameRate);
+            _this.texttureMap.x = _this.texttureMap.y = 0;
+            _this.timerMap.addEventListener(egret.TimerEvent.TIMER, _this.timerFunc, _this);
+            return _this;
+        }
+        Animation.prototype.setPos = function (x, y, width, height) {
+            this.x = x;
+            this.y = y;
+            this.width = width;
+            this.height = height;
+        };
+        /**
+         * 定时器回调函数
+         */
+        Animation.prototype.timerFunc = function () {
+            if (this.loopTotalNumber !== 0 && this.nowLoopNumber === this.loopTotalNumber) {
+                this.stop();
+                return;
+            }
+            var nextIndex = this.nowFrameIndex + 1;
+            if (nextIndex > this.totalFrameNumber) {
+                nextIndex = this.startFrameIndex;
+                this.nowLoopNumber++;
+            }
+            this.nowFrameIndex = nextIndex;
+            this.settexture(this.nowFrameIndex);
+        };
+        /**
+         * 设置动画帧纹理
+         * @param {number} frameIndex
+         */
+        Animation.prototype.settexture = function (frameIndex) {
+            this.texttureMap.texture = RES.getRes(this.texttureName + frameIndex); //+"_png"
+        };
+        /**
+         * 设置纹理
+         * @param {string} texttureName
+         */
+        Animation.prototype.setNextexture = function (texttureName) {
+            this.texttureMap.texture = RES.getRes(texttureName);
+        };
+        /**
+         * 播放
+         */
+        Animation.prototype.play = function () {
+            this.timerMap.start();
+        };
+        /**
+         * 暂停
+         */
+        Animation.prototype.stop = function () {
+            this.timerMap.stop();
+        };
+        return Animation;
+    }(egret.Sprite));
+    Uilt.Animation = Animation;
+    __reflect(Animation.prototype, "Uilt.Animation");
     //日志类
     var Log = (function () {
         function Log() {
@@ -433,8 +504,8 @@ var Uilt;
         }
         Object.defineProperty(Stage, "interval", {
             get: function () {
-                this.stage.width = UiltGame.interval.configMap.StateW;
-                this.stage.height = UiltGame.interval.configMap.StateH;
+                this.stage.width = UiltGame.interval.configMap.StateWithd;
+                this.stage.height = UiltGame.interval.configMap.StateHeight;
                 return (this._interval || (this._interval = new Stage));
             },
             enumerable: true,
