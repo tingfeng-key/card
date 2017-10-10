@@ -12,12 +12,16 @@
 
   "setting": {
     "skin": 1,
-    "grade": 3,
+    "grade": 4,
     "font": "微软雅黑",
     "rewardArr": [
       {
         "num": 2048,
         "url": "http://www.fz222.com"
+      },
+      {
+        "num": 1024,
+        "url": "https://www.fz222.com"
       }
     ]
   }

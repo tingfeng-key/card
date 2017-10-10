@@ -13,34 +13,6 @@ var __extends = (this && this.__extends) || (function () {
 })();
 var Uilt;
 (function (Uilt) {
-    //配置类
-    /*export class Config {
-
-        public constructor() {
-            RES.addEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
-            RES.loadConfig("resource/gameConfig.json", "resource", "json")
-        }
-        private onResCommon(e) {
-            RES.removeEventListener(RES.ResourceEvent.CONFIG_COMPLETE, this.onResCommon, this);
-            Logger.info(e.target)
-        }
-        public static debug: boolean = true; //调试模式
-        public static gameName: string = "2048"; //游戏名称
-        public static StateW: number = 640; //舞台宽度
-        public static StateH: number = 1136; //舞台高度
-        public static panelLineWidth: number = 2; //线条宽度
-        public static panelLineColor: number = 0x00ff00; //线条颜色
-
-        public static LoadGameConfigUrl: string = '/diyGames/getConfig/' //加载游戏配置URL
-
-        public static weixinSignUrl: string = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
-
-        //设置
-        public static setting_skin: number = 1; //设置皮肤
-        public static setting_grade: number = 4;//设置难度
-        public static setting_font: string = "微软雅黑"; //设置字体
-        public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
-    }*/
     //日志类
     var Log = (function () {
         function Log() {
@@ -70,7 +42,6 @@ var Uilt;
             this.NowTimer = 0; //游戏时间
             this.Timeer = 10; // 倒计时
             this.Score = 0; //分数
-            this.configMap = null; //配置对象
         }
         /**
          * 获取游戏状态
@@ -192,6 +163,19 @@ var Uilt;
             for (var i = 0; i < this.targets.length; i++) {
                 this.removeChild(this.targets[i]);
                 if (this.targets[i].hashCode === target.hashCode) {
+                    this.targets.splice(i, 1);
+                }
+            }
+        };
+        /**
+         * 根据哈希值移除场景
+         * @param hash
+         */
+        SceneManager.prototype.removeScenceByHash = function (hash) {
+            console.log(hash);
+            for (var i = 0; i < this.targets.length; i++) {
+                if (this.targets[i].hashCode === hash) {
+                    this.removeChild(this.targets[i]);
                     this.targets.splice(i, 1);
                 }
             }
@@ -363,14 +347,86 @@ var Uilt;
             trapezoid.graphics.lineTo(x - upWidth / 2, y - height);
             return trapezoid;
         };
-        Tool.createTextField = function () {
+        /**
+         * 创建文字显示
+         * @param message 文本内容
+         * @returns {egret.TextField}
+         */
+        Tool.createTextField = function (message) {
             var text = new egret.TextField;
+            text.textAlign = "center";
+            text.text = message;
+            text.fontFamily = "微软雅黑";
+            text.textColor = 0x000000;
+            text.size = 30;
             return text;
+        };
+        /**
+         * 检测是否是URL
+         * @param urlString 待检测的URL字符串
+         * @returns {boolean}
+         */
+        Tool.isUrl = function (urlString) {
+            var regexp = /((http|https):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/ig;
+            return regexp.test(urlString);
         };
         return Tool;
     }());
     Uilt.Tool = Tool;
     __reflect(Tool.prototype, "Uilt.Tool");
+    //询问框
+    var LayerConfirm = (function (_super) {
+        __extends(LayerConfirm, _super);
+        function LayerConfirm() {
+            var _this = _super.call(this) || this;
+            _this.maskMap = new egret.Shape(); //遮罩
+            _this.group = new egret.Sprite(); //组件
+            _this.x = _this.y = 0;
+            _this.width = Stage.stageW;
+            _this.height = Stage.stageH;
+            _this.btn1Func = function () { };
+            _this.btn2Func = function () { };
+            return _this;
+        }
+        /**
+         * 初始化
+         */
+        LayerConfirm.prototype.init = function () {
+            this.maskMap.graphics.beginFill(0x000);
+            this.maskMap.graphics.drawRect(0, 0, this.width, this.height);
+            this.maskMap.graphics.endFill();
+            this.maskMap.alpha = 0.6;
+            this.addChild(this.maskMap);
+            this.group.width = 400;
+            this.group.height = 300;
+            this.group.x = (this.width - this.group.width) / 2;
+            this.group.y = (this.height - this.group.height) / 2;
+            this.group.graphics.beginFill(0x3bb4f2);
+            this.group.graphics.drawRoundRect(0, 0, this.group.width, this.group.height, 10, 10);
+            this.group.graphics.endFill();
+            this.addChild(this.group);
+            this.group.addChild(this.textMap);
+            this.textMap.width = this.group.width;
+            this.textMap.y = 30;
+            this.btn1 = Tool.createBtn(60, this.group.height - 90, 110, 60, 10, "确定", 0xe0690c, 0xffffff);
+            this.btn2 = Tool.createBtn(this.group.width - 170, this.group.height - 90, 110, 60, 10, "取消", 0xe0690c, 0xffffff);
+            this.group.addChild(this.btn1);
+            this.group.addChild(this.btn2);
+            this.btn1.addEventListener(egret.TouchEvent.TOUCH_TAP, this.btn1Funcs, this);
+            this.btn2.addEventListener(egret.TouchEvent.TOUCH_TAP, this.btn2Funcs, this);
+        };
+        LayerConfirm.prototype.btn1Funcs = function () {
+            this.btn1.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.btn1Funcs, this);
+            this.btn1Func();
+        };
+        LayerConfirm.prototype.btn2Funcs = function () {
+            this.btn2.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.btn2Funcs, this);
+            this.btn2Func();
+        };
+        return LayerConfirm;
+    }(egret.Sprite));
+    Uilt.LayerConfirm = LayerConfirm;
+    __reflect(LayerConfirm.prototype, "Uilt.LayerConfirm");
     //舞台类
     var Stage = (function () {
         function Stage() {
