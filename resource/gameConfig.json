@@ -1,0 +1,28 @@
+{
+  "debug": true,
+  "gameName": "2048",
+  "StateWidth": 640,
+  "StateHeight": 1136,
+  "LoadGameConfigUrl": "/diyGames/getConfig/",
+  "weixinSignUrl": "/diyGames/getWXJsapiTicket",
+
+
+  "panelLineWidth": 2,
+  "panelLineColor": "0x00ff00",
+
+  "setting": {
+    "skin": 1,
+    "grade": 4,
+    "font": "微软雅黑",
+    "rewardArr": [
+      {
+        "num": 2048,
+        "url": "http://www.fz222.com"
+      },
+      {
+        "num": 1024,
+        "url": "https://www.fz222.com"
+      }
+    ]
+  }
+}

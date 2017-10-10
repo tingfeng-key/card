@@ -24,7 +24,15 @@
     },
     {
       "name": "weixinapi",
-      "path": "./weixinapi"
+      "path": "./libsrc/weixinapi"
+    },
+    {
+      "name": "keyboard",
+      "path": "./libsrc/keyboard"
+    },
+    {
+      "name": "mouse",
+      "path": "./libsrc/mouse"
     },
     {
       "name": "promise",

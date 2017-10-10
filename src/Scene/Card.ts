@@ -4,8 +4,8 @@
 module SceneCard {
     import Stage = Uilt.Stage;
     import Tool = Uilt.Tool;
-    import Config = Uilt.Config;
     import AnchorUtils = Uilt.AnchorUtils;
+    import UniltGame = Uilt.UiltGame;
     export class Road extends egret.Sprite {
         public constructor() {
             super()
@@ -148,7 +148,7 @@ module SceneCard {
             this.gameName.width = 400
             this.gameName.height = 80
             this.gameName.size = 80
-            this.gameName.text = Config.gameName
+            this.gameName.text = UniltGame.interval.configMap.gameName
             this.gameName.fontFamily = "楷体"
             this.gameName.textAlign = "center"
             this.gameName.textColor = this.btnColor

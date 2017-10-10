@@ -1,4 +1,15 @@
 {
-	"groups":[],
-	"resources":[]
+	"groups": [
+		{
+			"keys": "gameConfig_json",
+			"name": "config"
+		}
+	],
+	"resources": [
+		{
+			"url": "gameConfig.json",
+			"type": "json",
+			"name": "gameConfig_json"
+		}
+	]
 }

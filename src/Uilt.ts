@@ -1,29 +1,29 @@
 module Uilt {
-	//配置类
-	export class Config {
-		public static debug: boolean = true; //调试模式
-		public static gameName: string = "2048"; //游戏名称
-		public static StateW: number = 640; //舞台宽度
-		public static StateH: number = 1136; //舞台高度
-		public static panelLineWidth: number = 2; //线条宽度
-		public static panelLineColor: number = 0x00ff00; //线条颜色
-
-		public static LoadGameConfigUrl: string = '/diyGames/getConfig/' //加载游戏配置URL
-
-		public static weixinSignUrl: string = '/diyGames/getWXJsapiTicket'; //后端微信签名地址
-
-		//设置
-		public static setting_skin: number = 1; //设置皮肤
-		public static setting_grade: number = 4;//设置难度
-		public static setting_font: string = "微软雅黑"; //设置字体
-		public static setting_rewardArr: string = "[{num: 2048, url: 'http://www.fz222.com'}]" //奖励机制
+	//日志类
+	export class Log {
+		public static info(msg: string): void {
+			console.info(msg)
+		}
+		public static log(msg: string): void {
+			console.log(msg)
+		}
+		public static error(msg: string): void {
+			console.error(msg)
+		}
+		public static warn(msg: string): void {
+			console.warn(msg)
+		}
+		public static debug(msg: string): void {
+			console.info(msg)
+		}
 	}
 	//游戏基本属性类
-	export class Game {
+	export class UiltGame {
 		private Status:GameStatus;//当前的游戏状态
 		private NowTimer:number = 0;//游戏时间
 		private Timeer:number = 10;// 倒计时
 		private Score:number = 0;//分数
+		public configMap: any; //配置对象
 		public constructor() {
 		}
 
@@ -103,38 +103,70 @@ module Uilt {
 			this.NowTimer = 0;
 		}
 
-		public static _interval:Game;
-		public static get interval(): Game{
-			return (this._interval || (this._interval = new Game));
+		public static _interval:UiltGame;
+		public static get interval(): UiltGame{
+			return (this._interval || (this._interval = new UiltGame));
 		}
 	}
 	//场景管理类
 	export class SceneManager extends egret.Sprite  {
+		private targets: Array<egret.Sprite> = []; //显示对象
 		public static _interval:SceneManager;
 		public static get interval(): SceneManager {
 			return (this._interval || (this._interval = new SceneManager));
 		}
 		public constructor() {
-			super()
-			this.x = 0
-			this.y = 0
-			this.width = Stage.stageW
+			super();
+			this.x = 0;
+			this.y = 0;
+			this.width = Stage.stageW;
 			this.height = Stage.stageH
 		}
 		/**
 		 * 加载场景
 		 * @param target
 		 */
-		public loadScence(target: egret.Sprite){
-			this.addChild(target)
+		public loadScence(target: egret.Sprite): void {
+			this.addChild(target);
+			this.targets.push(target);
 		}
 
 		/**
 		 * 移除场景
 		 * @param target
 		 */
-		public removeScence(target: egret.Sprite) {
+		public removeScence(target: egret.Sprite): void {
 			this.removeChild(target)
+			for (let i = 0; i < this.targets.length; i++){
+				this.removeChild(this.targets[i]);
+				if(this.targets[i].hashCode === target.hashCode){
+					this.targets.splice(i, 1)
+				}
+			}
+		}
+
+		/**
+		 * 根据哈希值移除场景
+		 * @param hash
+		 */
+		public removeScenceByHash(hash: number): void {
+			console.log(hash)
+			for (let i = 0; i < this.targets.length; i++){
+				if(this.targets[i].hashCode === hash){
+					this.removeChild(this.targets[i]);
+					this.targets.splice(i,1);
+				}
+			}
+		}
+
+		/**
+		 * 清空场景
+		 */
+		public removeAllScence(): void {
+			for (let i = 0; i < this.targets.length; i++){
+				this.removeChild(this.targets[i]);
+			}
+			this.targets = []
 		}
 	}
 	//工具 类
@@ -172,7 +204,7 @@ module Uilt {
 		 */
 		public static createLineTo(
 			x:number = 0, y: number = 0, x2:number, y2: number,
-			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
+			lineW:number = UiltGame.interval.configMap.panelLineWidth, lineC: number = UiltGame.interval.configMap.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
 			shp.x = x
@@ -198,7 +230,7 @@ module Uilt {
 		 */
 		public static createCurveTo(
 			x:number = 0, y: number = 0, x1:number, y1: number, w:number, h: number,
-			lineW:number = Config.panelLineWidth, lineC: number = Config.panelLineColor
+			lineW:number = UiltGame.interval.configMap.panelLineWidth, lineC: number = UiltGame.interval.configMap.panelLineColor
 		){
 			var shp:egret.Shape = new egret.Shape();
 			shp.graphics.lineStyle( lineW, lineC );
@@ -299,17 +331,94 @@ module Uilt {
 			return trapezoid
 		}
 
-		public static createTextField(): egret.TextField {
-			let text: egret.TextField = new egret.TextField
+		/**
+		 * 创建文字显示
+		 * @param message 文本内容
+		 * @returns {egret.TextField}
+		 */
+		public static createTextField(message: string): egret.TextField {
+			let text: egret.TextField = new egret.TextField;
+			text.textAlign = "center";
+			text.text = message;
+			text.fontFamily = "微软雅黑";
+			text.textColor = 0x000000;
+			text.size = 30;
 			return text
+		}
+
+		/**
+		 * 检测是否是URL
+		 * @param urlString 待检测的URL字符串
+		 * @returns {boolean}
+		 */
+		public static isUrl(urlString: string): boolean {
+			let regexp = /((http|https):\/\/([\w\-]+\.)+[\w\-]+(\/[\w\u4e00-\u9fa5\-\.\/?\@\%\!\&=\+\~\:\#\;\,]*)?)/ig;
+			return regexp.test(urlString);
+		}
+	}
+	//询问框
+	export class LayerConfirm extends egret.Sprite {
+		public textMap: egret.TextField; //文本对象
+		public maskMap: egret.Shape = new egret.Shape();//遮罩
+		public group: egret.Sprite = new egret.Sprite(); //组件
+		public btn1: egret.Sprite;//按钮
+		public btn2: egret.Sprite;//按钮
+		public btn1Func: any; //确定回调函数
+		public btn2Func: any; //取消回调函数
+		public constructor() {
+			super();
+			this.x = this.y = 0;
+			this.width = Stage.stageW;
+			this.height = Stage.stageH;
+			this.btn1Func = ()=>{};
+			this.btn2Func = ()=>{};
+		}
+
+		/**
+		 * 初始化
+		 */
+		public init(): void {
+			this.maskMap.graphics.beginFill( 0x000 );
+			this.maskMap.graphics.drawRect( 0,0,this.width,this.height);
+			this.maskMap.graphics.endFill();
+			this.maskMap.alpha = 0.6;
+			this.addChild(this.maskMap);
+
+			this.group.width = 400;
+			this.group.height = 300;
+			this.group.x = (this.width-this.group.width)/2;
+			this.group.y = (this.height-this.group.height)/2;
+			this.group.graphics.beginFill(0x3bb4f2);
+			this.group.graphics.drawRoundRect( 0, 0, this.group.width, this.group.height, 10, 10);
+			this.group.graphics.endFill();
+			this.addChild(this.group);
+			this.group.addChild(this.textMap);
+			this.textMap.width = this.group.width
+			this.textMap.y = 30
+
+			this.btn1 = Tool.createBtn(60, this.group.height-90, 110, 60, 10, "确定", 0xe0690c, 0xffffff);
+			this.btn2 = Tool.createBtn(this.group.width-170, this.group.height-90, 110, 60, 10, "取消", 0xe0690c, 0xffffff);
+			this.group.addChild(this.btn1);
+			this.group.addChild(this.btn2);
+			this.btn1.addEventListener(egret.TouchEvent.TOUCH_TAP, this.btn1Funcs, this);
+			this.btn2.addEventListener(egret.TouchEvent.TOUCH_TAP, this.btn2Funcs, this);
+		}
+
+		private btn1Funcs(): void {
+			this.btn1.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.btn1Funcs, this);
+			this.btn1Func()
+		}
+		private btn2Funcs(): void {
+			this.btn2.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.btn2Funcs, this);
+			this.btn2Func()
 		}
 	}
 	//舞台类
 	export class Stage {
 		public static _interval:Stage;
 		public static get interval(): Stage{
-			this.stage.width = Config.StateW
-			this.stage.height = Config.StateH
+			this.stage.width = UiltGame.interval.configMap.StateW
+			this.stage.height = UiltGame.interval.configMap.StateH
 			return (this._interval || (this._interval = new Stage));
 		}
 		/**
@@ -475,7 +584,7 @@ module Uilt {
 		 */
 		public init(): void {
 			let urlloader = new egret.URLLoader(),
-				req = new egret.URLRequest(Config.weixinSignUrl);
+				req = new egret.URLRequest(UiltGame.interval.configMap.weixinSignUrl);
 			urlloader.data = {url: window.location.href}
 			urlloader.load(req);
 			req.method = egret.URLRequestMethod.GET;
