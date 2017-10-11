@@ -243,7 +243,6 @@ var Uilt;
          * @param hash
          */
         SceneManager.prototype.removeScenceByHash = function (hash) {
-            console.log(hash);
             for (var i = 0; i < this.targets.length; i++) {
                 if (this.targets[i].hashCode === hash) {
                     this.removeChild(this.targets[i]);

@@ -21,8 +21,10 @@ module ElsbScene {
     //游戏主菜单
     export class Menu extends egret.Sprite {
         public gameName: egret.TextField = new egret.TextField; //游戏名称
+        public maskMap: egret.Shape = new egret.Shape() //遮罩
         public btnGroup: egret.Sprite; //菜单按钮组
         public startBtn: egret.Sprite; //开始游戏按钮
+        public backGameBtn: egret.Sprite;// 继续游戏按钮
         public explainBtn: egret.Sprite; //操作介绍按钮
         public settingBtn: egret.Sprite; //游戏设置按钮
         public aboutBtn: egret.Sprite; //关于游戏按钮
@@ -32,9 +34,16 @@ module ElsbScene {
         private btnWidth: number = 200; //按钮默认宽度
         private fontColor: number = 0xffffff; //字体颜色
         public constructor() {
-            super()
+            super();
             this.width = Stage.stageW;
             this.height = Stage.stageH;
+
+            this.maskMap.graphics.beginFill( 0x000 );
+            this.maskMap.graphics.drawRect( 0,0,this.width,this.height);
+            this.maskMap.graphics.endFill();
+            this.maskMap.alpha = 0.6;
+            this.addChild( this.maskMap );
+
             this.gameName.width = 400;
             this.gameName.height = 80;
             this.gameName.size = 80;
@@ -44,33 +53,56 @@ module ElsbScene {
             this.gameName.textColor = this.btnColor;
             this.gameName.x = (Stage.stageW - this.gameName.width)/2;
             this.gameName.y = 300;
-            this.addChild(this.gameName);
+            //this.addChild(this.gameName);
 
             this.btnGroup = Tool.createRoundRect((Stage.stageW-this.btnWidth)/2, 500, this.btnWidth,
-                (this.btnHeight+20)*4, 10, 0x3bb4f2, true)
-            this.addChild(this.btnGroup)
+                (this.btnHeight+20)*4, 10, 0x3bb4f2, true);
+            this.addChild(this.btnGroup);
 
             this.startBtn = Tool.createBtn(0, 0, this.btnWidth, this.btnHeight, this.btnRound, "开始游戏",
                 this.btnColor, this.fontColor);
-            this.explainBtn = Tool.createBtn(0, (this.btnHeight+20)*1, this.btnWidth, this.btnHeight, this.btnRound,
-                "操作介绍", this.btnColor, this.fontColor);
-            this.settingBtn = Tool.createBtn(0, (this.btnHeight+20)*2, this.btnWidth, this.btnHeight, this.btnRound,
-                "游戏设置", this.btnColor, this.fontColor);
-            this.aboutBtn = Tool.createBtn(0, (this.btnHeight+20)*3, this.btnWidth, this.btnHeight, this.btnRound,
-                "关于游戏", this.btnColor, this.fontColor);
+            let backHeight: number = 0;
+            if(egret.localStorage.getItem("Elsb_NumberData") !== null){
+               backHeight = this.btnHeight+20;
+                this.backGameBtn = Tool.createBtn(0, (this.btnHeight+20)*1, this.btnWidth,
+                    this.btnHeight, this.btnRound, "继续游戏", this.btnColor, this.fontColor);
+                this.btnGroup.addChild(this.backGameBtn)
+                this.backGameBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.backGameBtnFunc, this)
+            }
+            /*this.explainBtn = Tool.createBtn(0, (this.btnHeight+20)*1+backHeight, this.btnWidth, this.btnHeight, this.btnRound,
+                "操作介绍", this.btnColor, this.fontColor);*/
+            /*this.settingBtn = Tool.createBtn(0, (this.btnHeight+20)*2+backHeight, this.btnWidth, this.btnHeight, this.btnRound,
+                "游戏设置", this.btnColor, this.fontColor);*/
+            /*this.aboutBtn = Tool.createBtn(0, (this.btnHeight+20)*2+backHeight, this.btnWidth, this.btnHeight, this.btnRound,
+                "关于游戏", this.btnColor, this.fontColor);*/
 
-            this.btnGroup.addChild(this.startBtn)
-            this.btnGroup.addChild(this.explainBtn)
-            this.btnGroup.addChild(this.settingBtn)
-            this.btnGroup.addChild(this.aboutBtn)
-            this.startBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.startBtnFunc, this)
-            this.explainBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.explainBtnFunc, this)
-            this.settingBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.settingBtnFunc, this)
-            this.aboutBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.aboutBtnFunc, this)
+            this.btnGroup.addChild(this.startBtn);
+            /*this.btnGroup.addChild(this.explainBtn);
+            this.btnGroup.addChild(this.settingBtn);
+            this.btnGroup.addChild(this.aboutBtn);*/
+            this.startBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.startBtnFunc, this);
+            /*this.explainBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.explainBtnFunc, this);
+            this.settingBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.settingBtnFunc, this);
+            this.aboutBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.aboutBtnFunc, this);*/
         }
         public startBtnFunc(): void {
-            SceneManager.interval.removeScence(this)
-            InitGame.start()
+            egret.localStorage.removeItem("Elsb_NumberData");
+            egret.localStorage.removeItem("Elsb_rewardArr");
+            egret.localStorage.removeItem("Elsb_NowScore");
+            UniltGame.interval.restart();
+            SceneManager.interval.removeAllScence();
+            Panel._interval = null;
+            Grid._interval = null;
+            NumberData._interval = null;
+            let newGame: InitGame = new InitGame;
+            newGame.start();
+            UiltGame.interval.setGameStatus(GameStatus.Start);
+        }
+        public backGameBtnFunc(): void {
+            SceneManager.interval.removeScenceByHash(this.hashCode);
+            /*let newGame: InitGame = new InitGame;
+            newGame.start();*/
+            UiltGame.interval.setGameStatus(GameStatus.Start);
         }
         private explainBtnFunc(): void {
 
@@ -172,72 +204,72 @@ module ElsbScene {
         }
         //初始化面板
         private init(): void {
-            this.width = Stage.stageW
-            this.height = Grid.topRow * Grid.gridSize
+            this.width = Stage.stageW;
+            this.height = Grid.topRow * Grid.gridSize;
 
-            this.BestGroup = Tool.createRoundRect(Stage.stageW*3/4, 10, this.width / 4.1, 110, 20,0x739999)
+            this.BestGroup = Tool.createRoundRect(Stage.stageW*3/4, 10, this.width / 4.1, 110, 20,0x739999);
 
-            this.scoreGroup = Tool.createRoundRect(this.width/2, 10, this.width / 4.1, 110, 20,0x739999)
+            this.scoreGroup = Tool.createRoundRect(this.width/2, 10, this.width / 4.1, 110, 20,0x739999);
 
-            this.addChild(this.BestGroup)
-            this.addChild(this.scoreGroup)
+            this.addChild(this.BestGroup);
+            this.addChild(this.scoreGroup);
 
-            this.BestTitleText.y = 20
-            this.BestTitleText.width = this.BestGroup.width
-            this.BestTitleText.text = "Best"
-            this.BestTitleText.textAlign = "center"
-            this.BestTitleText.fontFamily = UniltGame.interval.configMap.setting.font
-            this.BestGroup.addChild(this.BestTitleText)
+            this.BestTitleText.y = 20;
+            this.BestTitleText.width = this.BestGroup.width;
+            this.BestTitleText.text = "Best";
+            this.BestTitleText.textAlign = "center";
+            this.BestTitleText.fontFamily = UniltGame.interval.configMap.setting.font;
+            this.BestGroup.addChild(this.BestTitleText);
 
-            this.BestText.y = this.BestTitleText.height + 40
-            this.BestText.text = egret.localStorage.getItem("Elsb_Best_score") || "0"
-            this.BestText.width = this.BestTitleText.width
-            this.BestText.textAlign = "center"
-            this.BestText.fontFamily = UniltGame.interval.configMap.setting.font
-            this.BestGroup.addChild(this.BestText)
+            this.BestText.y = this.BestTitleText.height + 40;
+            this.BestText.text = "0";
+            this.BestText.width = this.BestTitleText.width;
+            this.BestText.textAlign = "center";
+            this.BestText.fontFamily = UniltGame.interval.configMap.setting.font;
+            this.BestGroup.addChild(this.BestText);
 
-            this.scoreTitleText.y = 20
-            this.scoreTitleText.text = "Score "
-            this.scoreTitleText.width = this.scoreGroup.width
-            this.scoreTitleText.textAlign = "center"
-            this.scoreTitleText.fontFamily = UniltGame.interval.configMap.setting.font
-            this.scoreGroup.addChild(this.scoreTitleText)
+            this.scoreTitleText.y = 20;
+            this.scoreTitleText.text = "Score ";
+            this.scoreTitleText.width = this.scoreGroup.width;
+            this.scoreTitleText.textAlign = "center";
+            this.scoreTitleText.fontFamily = UniltGame.interval.configMap.setting.font;
+            this.scoreGroup.addChild(this.scoreTitleText);
 
-            this.scoreText.y = this.scoreTitleText.height + 40
-            this.scoreText.text = "0"
-            this.scoreText.width = this.scoreTitleText.width
-            this.scoreText.textAlign = "center"
-            this.scoreText.fontFamily = UniltGame.interval.configMap.setting.font
-            this.scoreGroup.addChild(this.scoreText)
+            this.scoreText.y = this.scoreTitleText.height + 40;
+            this.scoreText.text = "0";
+            this.scoreText.width = this.scoreTitleText.width;
+            this.scoreText.textAlign = "center";
+            this.scoreText.fontFamily = UniltGame.interval.configMap.setting.font;
+            this.scoreGroup.addChild(this.scoreText);
 
-            let gameName: egret.TextField = new egret.TextField
-            gameName.textAlign = "center"
-            gameName.text = UniltGame.interval.configMap.gameName
-            gameName.fontFamily = UniltGame.interval.configMap.setting.font
-            gameName.textColor = 0x000000
-            gameName.width = this.width/2
-            gameName.size = 60
-            gameName.height = 110-25
-            gameName.y = 10+25
-            gameName.lineSpacing = 30
-            this.addChild(gameName)
+            let gameName: egret.TextField = new egret.TextField;
+            gameName.textAlign = "center";
+            gameName.text = UniltGame.interval.configMap.gameName;
+            gameName.fontFamily = UniltGame.interval.configMap.setting.font;
+            gameName.textColor = 0x000000;
+            gameName.width = this.width/2;
+            gameName.size = 60;
+            gameName.height = 110-25;
+            gameName.y = 10+25;
+            gameName.lineSpacing = 30;
+            this.addChild(gameName);
 
-            let desc: egret.TextField = new egret.TextField()
-            desc.text = "将相同的数字融合相加，争取获得更高的分数！"
-            desc.textColor = 0x000000
-            desc.textAlign = "center"
-            desc.fontFamily = UniltGame.interval.configMap.setting.font
-            desc.width = this.width/2
-            desc.size = 30
-            desc.y = 120+20
-            desc.lineSpacing = 20
-            this.addChild(desc)
+            let desc: egret.TextField = new egret.TextField();
+            desc.text = "将相同的数字融合相加，争取获得更高的分数！";
+            desc.textColor = 0x000000;
+            desc.textAlign = "center";
+            desc.fontFamily = UniltGame.interval.configMap.setting.font;
+            desc.width = this.width/2;
+            desc.size = 30;
+            desc.y = 120+20;
+            desc.lineSpacing = 20;
+            this.addChild(desc);
         }
         //设置分数
         public set score(val: number) {
             UniltGame.interval.incScore(val)
             this.scoreText.text = String(UniltGame.interval.getScore());
-            this.setBestScore();
+            this.bestScore = UniltGame.interval.getScore();
             this.rewardFunc();
         }
 
@@ -247,7 +279,9 @@ module ElsbScene {
         private rewardFunc(): void {
             let rewards: any = UiltGame.interval.configMap.setting.rewardArr;
             for (let i = 0; i < rewards.length; i++){
-                if(UiltGame.interval.getScore() >= rewards[i].num){
+                if(
+                    UiltGame.interval.getScore() >= rewards[i].num && rewards[i].isCan === undefined){
+                    rewards[i].isCan = true
                     let confirm: LayerConfirm = new LayerConfirm,
                         confirmHash = confirm.hashCode;
                     SceneManager.interval.loadScence(confirm)
@@ -255,6 +289,7 @@ module ElsbScene {
                     confirm.btn1Func = () => {
                         egret.localStorage.setItem("Elsb_NumberData", this.numberDataToString());
                         egret.localStorage.setItem("Elsb_NowScore", String(UiltGame.interval.getScore()));
+                        egret.localStorage.setItem("Elsb_rewardArr", JSON.stringify(rewards));
                         if(Tool.isUrl(rewards[i].url)){
                             window.location.href = rewards[i].url
                         }else{
@@ -266,6 +301,7 @@ module ElsbScene {
                     };
                     confirm.init();
                     confirm.textMap.y = 100;
+                    return ;
                 }
             }
         }
@@ -298,25 +334,24 @@ module ElsbScene {
         /**
          * 设置历史最大分数
          */
-        private setBestScore(): void {
-            let nowScore: number = UniltGame.interval.getScore();
+        public set bestScore(val: number) {
             if(egret.localStorage.getItem("Elsb_Best_score")){
-                let bestScore: number = parseInt(egret.localStorage.getItem("Elsb_Best_score"))
-                if(bestScore < nowScore){
-                    this.BestText.text = String(nowScore)
-                    egret.localStorage.setItem("Elsb_Best_score", String(nowScore))
+                let bestScore: number = parseInt(egret.localStorage.getItem("Elsb_Best_score"));
+                if(bestScore <= val){
+                    this.BestText.text = String(val);
+                    egret.localStorage.setItem("Elsb_Best_score", String(val));
                 }
             }else{
-                this.BestText.text = String(nowScore)
-                egret.localStorage.setItem("Elsb_Best_score", String(nowScore))
+                this.BestText.text = String(val);
+                egret.localStorage.setItem("Elsb_Best_score", String(val));
             }
         }
     }
     //游戏结束面板
     export class GameOver extends egret.Sprite {
-        public maskMap: egret.Shape = new egret.Shape() //遮罩
-        public group: egret.Sprite = new egret.Sprite() //组件
-        public restartBtn: egret.Sprite //重新开始按钮
+        public maskMap: egret.Shape = new egret.Shape(); //遮罩
+        public group: egret.Sprite = new egret.Sprite(); //组件
+        public restartBtn: egret.Sprite; //重新开始按钮
         public constructor(){
             super()
             this.width = Stage.stageW
@@ -326,45 +361,45 @@ module ElsbScene {
 
         //初始化
         private init(): void {
-            this.x = 0
-            this.y = 0
-            this.maskMap.graphics.beginFill( 0x000 )
-            this.maskMap.graphics.drawRect( 0,0,this.width,this.height)
-            this.maskMap.graphics.endFill()
-            this.maskMap.alpha = 0.6
-            this.addChild( this.maskMap )
+            this.x = 0;
+            this.y = 0;
+            this.maskMap.graphics.beginFill( 0x000 );
+            this.maskMap.graphics.drawRect( 0,0,this.width,this.height);
+            this.maskMap.graphics.endFill();
+            this.maskMap.alpha = 0.6;
+            this.addChild( this.maskMap );
 
             //面板
-            this.group.width = 400
-            this.group.height = 300
-            this.group.alpha = 0
-            this.group.x = (Stage.stageW-this.group.width)/2
-            this.group.y = (Stage.stageH-this.group.height)/2
-            this.group.graphics.beginFill(0x3bb4f2)
-            this.group.graphics.drawRoundRect( 0, 0, this.group.width, this.group.height, 10, 10)
-            this.group.graphics.endFill()
-            this.addChild(this.group)
+            this.group.width = 400;
+            this.group.height = 300;
+            this.group.alpha = 0;
+            this.group.x = (Stage.stageW-this.group.width)/2;
+            this.group.y = (Stage.stageH-this.group.height)/2;
+            this.group.graphics.beginFill(0x3bb4f2);
+            this.group.graphics.drawRoundRect( 0, 0, this.group.width, this.group.height, 10, 10);
+            this.group.graphics.endFill();
+            this.addChild(this.group);
 
             //重新开始按钮
             this.restartBtn = Tool.createBtn(
                 100, this.group.height-90, 200, 60, 10,
-                "重新开始", 0xe0690c, 0xffffff)
-            this.group.addChild(this.restartBtn)
-            this.restartBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this)
+                "重新开始", 0xe0690c, 0xffffff);
+            this.group.addChild(this.restartBtn);
+            this.restartBtn.addEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this);
 
             //分数
             let scoreTitleText: egret.TextField = new egret.TextField()
             scoreTitleText.y = 60
-            scoreTitleText.width = this.group.width
-            scoreTitleText.text = "分数"
-            scoreTitleText.textAlign = "center"
+            scoreTitleText.width = this.group.width;
+            scoreTitleText.text = "分数";
+            scoreTitleText.textAlign = "center";
             let scoreText: egret.TextField = new egret.TextField()
-            scoreText.width = scoreTitleText.width
-            scoreText.y = scoreTitleText.y+60
-            scoreText.textAlign = "center"
-            scoreText.text = String(UniltGame.interval.getScore())
-            this.group.addChild(scoreTitleText)
-            this.group.addChild(scoreText)
+            scoreText.width = scoreTitleText.width;
+            scoreText.y = scoreTitleText.y+60;
+            scoreText.textAlign = "center";
+            scoreText.text = String(UniltGame.interval.getScore());
+            this.group.addChild(scoreTitleText);
+            this.group.addChild(scoreText);
 
             //显示、抖动效果
             egret.Tween.get(this.group).to({
@@ -384,23 +419,29 @@ module ElsbScene {
 
         //重新开始按钮点击事件
         private restartFunc(e: egret.Event){
-            this.restartBtn.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this)
+            this.restartBtn.removeEventListener(egret.TouchEvent.TOUCH_TAP, this.restartFunc, this);
             //重置数据
-            UniltGame.interval.restart()
-            SceneManager.interval.removeAllScence()
-            Panel._interval = null
-            Grid._interval = null
+            UniltGame.interval.restart();
+            SceneManager.interval.removeAllScence();
+            NumberData.interval.removeTouchListener();
+            Panel._interval = null;
+            Grid._interval = null;
             NumberData._interval = null;
-            SceneManager.interval.loadScence(new BackgRound())
-            SceneManager.interval.loadScence(Panel.interval)
-            SceneManager.interval.loadScence(Grid.interval) //加载游戏格子场景
-            SceneManager.interval.loadScence(NumberData.interval) //加载游戏数据场景
+            egret.localStorage.removeItem("Elsb_NumberData");
+            egret.localStorage.removeItem("Elsb_rewardArr");
+            egret.localStorage.removeItem("Elsb_NowScore");
+            UiltGame.interval.setGameStatus(Uilt.GameStatus.Start);
+            let newGame: InitGame = new InitGame;
+            newGame.start();
         }
     }
     //数字数据操作
     export class NumberData extends egret.Sprite {
         public data: Array<NumberMap> = [] //数组
-        private keyMap: KeyBoard;
+        private keyMap: KeyBoard;//键盘监听对象
+        private isTouch: boolean = false //是否在滑动
+        private touchX: number = 0 //开始滑动的点X值
+        private touchY: number = 0 //开始滑动点的Y值
         public static _interval: NumberData;
         public static get interval(): NumberData {
             return this._interval || (this._interval = new NumberData);
@@ -411,15 +452,58 @@ module ElsbScene {
             this.y = Grid.interval.y
             this.width = Grid.interval.width
             this.height = Grid.interval.height
-            /*let sprite: NumberMap = new NumberMap(0, 0, 16)
-            this.data.push(sprite)
-            this.addChild(sprite)*/
-            /*this.createOne()
-            this.createOne()*/
 
             this.keyMap = new KeyBoard();
             //添加监听事件
             this.keyMap.addEventListener(KeyBoard.onkeydown,this.onkeydown,this);
+
+            Stage.stage.addEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchBeginFunc, this);
+            Stage.stage.addEventListener(egret.TouchEvent.TOUCH_END, this.touchEndFunc, this);
+        }
+
+        /**
+         * 移除触摸监听
+         */
+        public removeTouchListener(): void {
+            Stage.stage.removeEventListener(egret.TouchEvent.TOUCH_BEGIN, this.touchBeginFunc, this);
+            Stage.stage.removeEventListener(egret.TouchEvent.TOUCH_END, this.touchEndFunc, this);
+        }
+
+        /**
+         * 开始触摸回调函数
+         * @param e
+         */
+        private touchBeginFunc(e: egret.TouchEvent): void {
+            if(!this.gameStatusIsRun()) return;
+            this.isTouch = true;
+            this.touchX = e.localX;
+            this.touchY = e.localY
+        }
+
+        /**
+         * 触摸结束回调函数
+         * @param e
+         */
+        private touchEndFunc(e: egret.TouchEvent): void {
+            if(!this.gameStatusIsRun()) return;
+            let xDiff: number = (e.localX-this.touchX),
+                yDiff: number = (e.localY-this.touchY)
+            if(Math.abs(xDiff) > Math.abs(yDiff)){
+                if(xDiff > 100){
+                    this.right()
+                }else if(xDiff < -100){
+                    this.left()
+                }
+            }else{
+                if(yDiff > 100){
+                    this.down()
+                }else if(yDiff < -100){
+                    this.up()
+                }
+            }
+            this.touchY = 0;
+            this.touchX = 0;
+            this.isTouch = false
         }
 
         /**
@@ -593,7 +677,7 @@ module ElsbScene {
                 this.createOne()
             }
             if(this.gameOver()){
-                UniltGame.interval.setGameStatus(GameStatus.Died)
+                UniltGame.interval.setGameStatus(GameStatus.Died);
                 SceneManager.interval.loadScence(new GameOver)
             }
         }

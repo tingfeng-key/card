@@ -229,7 +229,6 @@ module Uilt {
 		 * @param hash
 		 */
 		public removeScenceByHash(hash: number): void {
-			console.log(hash)
 			for (let i = 0; i < this.targets.length; i++){
 				if(this.targets[i].hashCode === hash){
 					this.removeChild(this.targets[i]);
