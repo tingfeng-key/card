@@ -1,42 +1,43 @@
 {
-  "native": {
-    "path_ignore": []
-  },
-  "publish": {
-    "web": 0,
-    "native": 1,
-    "path": "bin-release"
-  },
-  "egret_version": "5.0.7",
-  "template": {},
-  "modules": [
-    {
-      "name": "egret"
-    },
-    {
-      "name": "game"
-    },
-    {
-      "name": "tween"
-    },
-    {
-      "name": "res"
-    },
-    {
-      "name": "weixinapi",
-      "path": "./libsrc/weixinapi"
-    },
-    {
-      "name": "keyboard",
-      "path": "./libsrc/keyboard"
-    },
-    {
-      "name": "mouse",
-      "path": "./libsrc/mouse"
-    },
-    {
-      "name": "promise",
-      "path": "./promise"
-    }
-  ]
+	"native": {
+		"path_ignore": [],
+		"android_as_path": "../app1"
+	},
+	"publish": {
+		"web": 0,
+		"native": 1,
+		"path": "bin-release"
+	},
+	"egret_version": "5.0.7",
+	"template": {},
+	"modules": [
+		{
+			"name": "egret"
+		},
+		{
+			"name": "game"
+		},
+		{
+			"name": "tween"
+		},
+		{
+			"name": "res"
+		},
+		{
+			"name": "weixinapi",
+			"path": "./libsrc/weixinapi"
+		},
+		{
+			"name": "keyboard",
+			"path": "./libsrc/keyboard"
+		},
+		{
+			"name": "mouse",
+			"path": "./libsrc/mouse"
+		},
+		{
+			"name": "promise",
+			"path": "./promise"
+		}
+	]
 }

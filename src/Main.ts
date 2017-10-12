@@ -54,10 +54,10 @@ class Main extends egret.DisplayObjectContainer {
         Stage.interval; //使用配置文件对舞台高度宽度初始化
         this.stage.addChild(SceneManager.interval);//添加场景管理类到舞台中
 
-        /*let newGame: InitGame = new InitGame;
-        newGame.start();*/
+        let newGame: InitGame = new InitGame;
+        newGame.start();
         console.log("完成")
-        /*let menu: Menu = new Menu
-        SceneManager.interval.loadScence(menu);*/
+        let menu: Menu = new Menu
+        SceneManager.interval.loadScence(menu);
     }
 }
